@@ -13,10 +13,15 @@ java {
 
 repositories {
     mavenCentral()
+    maven("http://mvn.int.revived.club/releases") {
+    isAllowInsecureProtocol = true
+  }
 }
 
 dependencies() {
   implementation("org.jspecify:jspecify:1.0.0")
+
+  api("de.yyuh.libs:celery:1.0.2-SNAPSHOT")
 }
 
 tasks.withType<JavaCompile> {
