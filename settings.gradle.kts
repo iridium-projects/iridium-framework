@@ -12,6 +12,6 @@ plugins {
 
 rootProject.name = "iridium"
 include("iridium")
-include("iridium-api")
+include("iridium-auth")
 include("shared")
 include("example")
