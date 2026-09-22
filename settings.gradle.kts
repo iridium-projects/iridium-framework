@@ -11,7 +11,9 @@ plugins {
 }
 
 rootProject.name = "iridium"
-include("iridium")
-include("iridium-auth")
-include("shared")
-include("example")
+include("iridium-core")
+include("iridium-codegen")
+include("iridium-test")
+include("iridium-web:iridium-web-core")
+include("iridium-web:iridium-web-undertow")
+findProject(":iridium-web:iridium-web-undertow")?.name = "iridium-web-undertow"

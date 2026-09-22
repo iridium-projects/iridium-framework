@@ -1,0 +1,21 @@
+package de.yyuh.iridium.core.validation;
+
+import de.yyuh.iridium.core.annotation.Internal;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Internal
+public final class ValidatorRegistry {
+
+    private final Map<Class<?>, Validator<?>> validators = new HashMap<>();
+
+    public <T> void register(final Class<T> type, final Validator<T> validator) {
+        validators.put(type, validator);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Validator<T> get(final Class<T> type) {
+        return (Validator<T>) validators.get(type);
+    }
+}

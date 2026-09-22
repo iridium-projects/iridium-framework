@@ -1,0 +1,3 @@
+de.yyuh.iridium.codegen.processor.BeanProcessor
+de.yyuh.iridium.codegen.processor.ValidationProcessor
+de.yyuh.iridium.core.annotation.processor.InternalUsageProcessor

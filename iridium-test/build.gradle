@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group = 'dev.yyuh.iridium.test'
+version = 'unspecified'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':iridium-core')
+    implementation project(':iridium-codegen')
+    annotationProcessor project(':iridium-codegen')
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
