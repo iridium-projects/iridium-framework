@@ -11,91 +11,117 @@ import io.undertow.Undertow;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public final class UndertowWebServer implements WebServer {
 
-    private final ResponseWriter responseWriter;
-    private Undertow undertow;
-    private Router router;
+  private static final Logger LOG = LoggerFactory.getLogger(UndertowWebServer.class);
 
-    public UndertowWebServer(final ResponseWriter responseWriter) {
-        this.responseWriter = responseWriter;
+  private final ResponseWriter responseWriter;
+  private Undertow undertow;
+  private Router router;
+
+  public UndertowWebServer(final ResponseWriter responseWriter) {
+    this.responseWriter = responseWriter;
+  }
+
+  @Override
+  public Result<Unit, Exception> start(final int port, final String host) {
+    return Result.of(() -> {
+      if (router == null) {
+        router = Router.load();
+      }
+
+      SLF4JBridgeHandler.removeHandlersForRootLogger();
+      SLF4JBridgeHandler.install();
+
+      undertow = Undertow.builder()
+          .addHttpListener(port, host)
+          .setHandler(this::handle)
+          .build();
+
+      undertow.start();
+      LOG.info("Undertow server started on {}:{}", host, port);
+      return Unit.INSTANCE;
+    });
+  }
+
+  @Override
+  public Result<Unit, Exception> registerRoutes() {
+    return Result.of(() -> {
+      router = Router.load();
+      return Unit.INSTANCE;
+    });
+  }
+
+  @Override
+  public void stop() {
+    LOG.info("Stopping Undertow server");
+    WebServer.super.stop();
+    if (undertow != null) {
+      undertow.stop();
     }
+  }
 
-    @Override
-    public Result<Unit, Exception> start(final int port, final String host) {
-        return Result.of(() -> {
-            if (router == null) {
-                router = Router.load();
-            }
-
-            undertow = Undertow.builder()
-                    .addHttpListener(port, host)
-                    .setHandler(this::handle)
-                    .build();
-
-            undertow.start();
-            return Unit.INSTANCE;
-        });
+  private void handle(final HttpServerExchange exchange) {
+    final long start = System.nanoTime();
+    try {
+      final Request request = toRequest(exchange);
+      final Response<?> response = router.dispatch(request);
+      write(exchange, response);
+      LOG.debug("{} {} -> {} ({} ms)", request.method(), request.path(),
+          response.status(), elapsedMillis(start));
+    } catch (final Exception e) {
+      LOG.error("Unhandled exception while processing {} {}",
+          exchange.getRequestMethod(), exchange.getRequestURI(), e);
+      exchange.setStatusCode(500);
+      exchange.getResponseSender().send("Internal Server Error");
     }
+  }
 
-    @Override
-    public Result<Unit, Exception> registerRoutes() {
-        return Result.of(() -> {
-            router = Router.load();
-            return Unit.INSTANCE;
-        });
-    }
+  private Request toRequest(final HttpServerExchange exchange) throws Exception {
+    final Map<String, List<String>> headers = new LinkedHashMap<>();
 
-    private void handle(final HttpServerExchange exchange) {
-        try {
-            final Request request = toRequest(exchange);
-            final Response<?> response = router.dispatch(request);
-            write(exchange, response);
-        } catch (final Exception e) {
-            exchange.setStatusCode(500);
-            exchange.getResponseSender().send("Internal Server Error");
-        }
-    }
+    exchange.getRequestHeaders().forEach(header -> {
+      final List<String> values = new ArrayList<>();
+      header.forEach(values::add);
+      headers.put(header.getHeaderName().toString(), values);
+    });
 
-    private Request toRequest(final HttpServerExchange exchange) throws Exception {
-        final Map<String, List<String>> headers = new LinkedHashMap<>();
+    final Map<String, List<String>> query = new LinkedHashMap<>();
+    exchange.getQueryParameters().forEach((name, values) -> query.put(name, new ArrayList<>(values)));
 
-        exchange.getRequestHeaders().forEach(header -> {
-            final List<String> values = new ArrayList<>();
-            header.forEach(values::add);
-            headers.put(header.getHeaderName().toString(), values);
-        });
+    exchange.startBlocking();
+    final byte[] body = exchange.getInputStream().readAllBytes();
 
-        final Map<String, List<String>> query = new LinkedHashMap<>();
-        exchange.getQueryParameters().forEach((name, values) ->
-                query.put(name, new ArrayList<>(values)));
+    return new Request(
+        exchange.getRequestMethod().toString(),
+        exchange.getRequestURI(),
+        headers,
+        query,
+        Map.of(),
+        body);
+  }
 
-        final byte[] body = exchange.getInputStream().readAllBytes();
+  private void write(final HttpServerExchange exchange, final Response<?> response) {
+    exchange.setStatusCode(response.status());
+    response.headers().forEach((name, value) -> exchange.getResponseHeaders().put(new HttpString(name), value));
 
-        return new Request(
-                exchange.getRequestMethod().toString(),
-                exchange.getRequestURI(),
-                headers,
-                query,
-                Map.of(),
-                body
-        );
-    }
+    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, responseWriter.contentType(response));
+    exchange.getResponseSender().send(ByteBuffer.wrap(responseWriter.writeBody(response)));
+  }
 
-    private void write(final HttpServerExchange exchange, final Response<?> response) {
-        exchange.setStatusCode(response.status());
-        response.headers().forEach((name, value) ->
-                exchange.getResponseHeaders().put(new HttpString(name), value));
-
-        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, responseWriter.contentType(response));
-        exchange.getResponseSender().send(ByteBuffer.wrap(responseWriter.writeBody(response)));
-    }
+  private static long elapsedMillis(final long startNanos) {
+    return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+  }
 }

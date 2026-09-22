@@ -2,9 +2,9 @@ package dev.yyuh.iridium.json;
 
 public interface Json {
 
-    String serialize(final Object value);
+  String serialize(final Object value);
 
-    byte[] serializeBytes(final Object value);
+  byte[] serializeBytes(final Object value);
 
-    <T> T deserialize(final String json, final Class<T> type);
+  <T> T deserialize(final String json, final Class<T> type);
 }

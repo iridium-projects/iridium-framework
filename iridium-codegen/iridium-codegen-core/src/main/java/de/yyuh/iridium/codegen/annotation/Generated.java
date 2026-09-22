@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
 public @interface Generated {
 
-    String author() default "";
+  String author() default "";
 
-    String date() default "";
+  String date() default "";
 }

@@ -8,5 +8,5 @@ import java.util.List;
 @Internal
 public interface Validator<T> {
 
-    Result<T, List<ConstraintViolation>> validate(final T value);
+  Result<T, List<ConstraintViolation>> validate(final T value);
 }

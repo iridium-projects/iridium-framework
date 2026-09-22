@@ -3,9 +3,9 @@ package de.yyuh.iridium.core.hook;
 @FunctionalInterface
 public interface ShutdownHook {
 
-    void run();
+  void run();
 
-    default int priority() {
-        return 0;
-    }
+  default int priority() {
+    return 0;
+  }
 }

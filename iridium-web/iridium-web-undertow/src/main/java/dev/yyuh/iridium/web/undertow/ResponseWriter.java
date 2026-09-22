@@ -10,29 +10,29 @@ import java.util.Map;
 @Component
 public final class ResponseWriter {
 
-    private final Json json;
+  private final Json json;
 
-    public ResponseWriter(final Json json) {
-        this.json = json;
+  public ResponseWriter(final Json json) {
+    this.json = json;
+  }
+
+  public byte[] writeBody(final Response<?> response) {
+    final Object body = response.body();
+
+    return switch (body) {
+      case null -> new byte[0];
+      case final byte[] bytes -> bytes;
+      case final String string -> string.getBytes(StandardCharsets.UTF_8);
+      default -> json.serializeBytes(body);
+    };
+  }
+
+  public String contentType(final Response<?> response) {
+    for (final Map.Entry<String, String> header : response.headers().entrySet()) {
+      if (header.getKey().equalsIgnoreCase("Content-Type")) {
+        return header.getValue();
+      }
     }
-
-    public byte[] writeBody(final Response<?> response) {
-        final Object body = response.body();
-
-        return switch (body) {
-            case null -> new byte[0];
-            case final byte[] bytes -> bytes;
-            case final String string -> string.getBytes(StandardCharsets.UTF_8);
-            default -> json.serializeBytes(body);
-        };
-    }
-
-    public String contentType(final Response<?> response) {
-        for (final Map.Entry<String, String> header : response.headers().entrySet()) {
-            if (header.getKey().equalsIgnoreCase("Content-Type")) {
-                return header.getValue();
-            }
-        }
-        return "application/json";
-    }
+    return "application/json";
+  }
 }

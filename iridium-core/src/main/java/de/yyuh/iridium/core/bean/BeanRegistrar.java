@@ -5,5 +5,5 @@ import de.yyuh.iridium.core.annotation.Internal;
 @Internal
 public interface BeanRegistrar {
 
-    void register(final BeanPool pool);
+  void register(final BeanPool pool);
 }

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Digits {
 
-    int integer();
+  int integer();
 
-    int fraction();
+  int fraction();
 }

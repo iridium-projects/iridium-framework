@@ -5,5 +5,5 @@ import de.yyuh.iridium.core.annotation.Internal;
 @Internal
 public interface ValidationRegistrar {
 
-    void register(final ValidatorRegistry registry);
+  void register(final ValidatorRegistry registry);
 }

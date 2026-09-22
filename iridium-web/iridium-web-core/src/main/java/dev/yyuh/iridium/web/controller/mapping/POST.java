@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface POST {
 
-    String value() default "";
+  String value() default "";
 }

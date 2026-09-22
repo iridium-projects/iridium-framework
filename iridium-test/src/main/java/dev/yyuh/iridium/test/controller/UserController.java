@@ -28,10 +28,13 @@ public final class UserController {
 
     public UserController(final UserService userService) {
         this.userService = userService;
+
+        System.out.println("UserController created");
     }
 
     @GET("/users")
     public Response<?> list(@RequestParam(value = "limit", defaultValue = "50") final int limit) {
+        System.out.println("UserController.list called");
         return Response.ok(userService.list(limit));
     }
 

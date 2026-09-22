@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface OnShutdown {
 
-    int priority() default 0;
+  int priority() default 0;
 }

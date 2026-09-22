@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface RequestParam {
 
-    String value() default "";
+  String value() default "";
 
-    boolean required() default true;
+  boolean required() default true;
 
-    String defaultValue() default "";
+  String defaultValue() default "";
 }

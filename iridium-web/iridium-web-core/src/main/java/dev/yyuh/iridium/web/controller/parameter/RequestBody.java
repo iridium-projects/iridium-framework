@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface RequestBody {
 
-    boolean required() default true;
+  boolean required() default true;
 }

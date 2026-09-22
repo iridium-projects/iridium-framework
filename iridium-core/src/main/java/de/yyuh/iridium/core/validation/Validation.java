@@ -1,6 +1,5 @@
 package de.yyuh.iridium.core.validation;
 
-import de.yyuh.iridium.core.annotation.Internal;
 import de.yyuh.iridium.core.result.Result;
 
 import java.util.List;
@@ -8,53 +7,53 @@ import java.util.ServiceLoader;
 
 public final class Validation {
 
-    private static final ValidatorRegistry REGISTRY = new ValidatorRegistry();
-    private static boolean initialized = false;
+  private static final ValidatorRegistry REGISTRY = new ValidatorRegistry();
+  private static boolean initialized = false;
 
-    private Validation() {
+  private Validation() {
+  }
+
+  public static synchronized void initialize() {
+    if (initialized) {
+      return;
+    }
+    for (final ValidationRegistrar registrar : ServiceLoader.load(ValidationRegistrar.class)) {
+      registrar.register(REGISTRY);
+    }
+    initialized = true;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> Result<T, List<ConstraintViolation>> validate(final T value) {
+    initialize();
+
+    if (value == null) {
+      return Result.err(List.of(new ConstraintViolation("", "must not be null", null)));
     }
 
-    public static synchronized void initialize() {
-        if (initialized) {
-            return;
-        }
-        for (final ValidationRegistrar registrar : ServiceLoader.load(ValidationRegistrar.class)) {
-            registrar.register(REGISTRY);
-        }
-        initialized = true;
+    final Validator<T> validator = REGISTRY.get((Class<T>) value.getClass());
+    if (validator == null) {
+      return Result.ok(value);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Result<T, List<ConstraintViolation>> validate(final T value) {
-        initialize();
+    return validator.validate(value);
+  }
 
-        if (value == null) {
-            return Result.err(List.of(new ConstraintViolation("", "must not be null", null)));
-        }
+  public static <T> T escape(final T value) {
+    initialize();
 
-        final Validator<T> validator = REGISTRY.get((Class<T>) value.getClass());
-        if (validator == null) {
-            return Result.ok(value);
-        }
-
-        return validator.validate(value);
+    if (value == null) {
+      return null;
     }
 
-    public static <T> T escape(final T value) {
-        initialize();
+    final Validator<T> validator = REGISTRY.get((Class<T>) value.getClass());
 
-        if (value == null) {
-            return null;
-        }
-
-        final Validator<T> validator = REGISTRY.get((Class<T>) value.getClass());
-
-        if (validator instanceof final Escaper<?> escaper) {
-            @SuppressWarnings("unchecked")
-            final Escaper<T> typed = (Escaper<T>) escaper;
-            return typed.escape(value);
-        }
-
-        return value;
+    if (validator instanceof final Escaper<?> escaper) {
+      @SuppressWarnings("unchecked")
+      final Escaper<T> typed = (Escaper<T>) escaper;
+      return typed.escape(value);
     }
+
+    return value;
+  }
 }

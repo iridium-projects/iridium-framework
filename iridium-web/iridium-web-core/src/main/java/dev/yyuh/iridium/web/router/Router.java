@@ -6,6 +6,8 @@ import dev.yyuh.iridium.web.webserver.WebRegistrar;
 import dev.yyuh.iridium.web.middleware.Middleware;
 import dev.yyuh.iridium.web.middleware.MiddlewareChain;
 import dev.yyuh.iridium.web.response.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -53,9 +55,11 @@ public final class Router {
     public static Router load() {
         BeanPool.initialize();
         final Router router = new Router();
+
         for (final WebRegistrar registrar : ServiceLoader.load(WebRegistrar.class)) {
             registrar.register(router);
         }
+
         return router;
     }
 
