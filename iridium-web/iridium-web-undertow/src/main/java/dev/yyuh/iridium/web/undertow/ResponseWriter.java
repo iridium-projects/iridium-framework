@@ -1,7 +1,8 @@
-package dev.yyuh.iridium.web.response;
+package dev.yyuh.iridium.web.undertow;
 
 import de.yyuh.iridium.core.component.Component;
 import dev.yyuh.iridium.json.Json;
+import dev.yyuh.iridium.web.response.Response;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -18,19 +19,12 @@ public final class ResponseWriter {
     public byte[] writeBody(final Response<?> response) {
         final Object body = response.body();
 
-        if (body == null) {
-            return new byte[0];
-        }
-
-        if (body instanceof byte[] bytes) {
-            return bytes;
-        }
-
-        if (body instanceof String string) {
-            return string.getBytes(StandardCharsets.UTF_8);
-        }
-
-        return json.serializeBytes(body);
+        return switch (body) {
+            case null -> new byte[0];
+            case final byte[] bytes -> bytes;
+            case final String string -> string.getBytes(StandardCharsets.UTF_8);
+            default -> json.serializeBytes(body);
+        };
     }
 
     public String contentType(final Response<?> response) {

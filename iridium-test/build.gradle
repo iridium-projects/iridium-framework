@@ -18,10 +18,14 @@ repositories {
 dependencies {
     implementation project(':iridium-core')
     implementation project(':iridium-codegen')
+    implementation project(':iridium-web:iridium-web-core')
+    implementation project(':iridium-web:iridium-web-undertow')
+    implementation project(':iridium-json:iridium-json-avaje')
     annotationProcessor project(':iridium-codegen')
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {

@@ -1,8 +1,8 @@
 package dev.yyuh.iridium.web.middleware;
 
 import de.yyuh.iridium.core.annotation.Internal;
-import dev.yyuh.iridium.web.Handler;
-import dev.yyuh.iridium.web.Request;
+import dev.yyuh.iridium.web.router.Handler;
+import dev.yyuh.iridium.web.router.Request;
 import dev.yyuh.iridium.web.response.Response;
 
 import java.util.List;

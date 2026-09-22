@@ -1,3 +1,4 @@
 de.yyuh.iridium.codegen.processor.BeanProcessor
 de.yyuh.iridium.codegen.processor.ValidationProcessor
+de.yyuh.iridium.codegen.processor.WebProcessor
 de.yyuh.iridium.core.annotation.processor.InternalUsageProcessor

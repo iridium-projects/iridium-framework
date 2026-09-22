@@ -1,4 +1,4 @@
-package dev.yyuh.iridium.web;
+package dev.yyuh.iridium.web.router;
 
 import dev.yyuh.iridium.web.response.Response;
 

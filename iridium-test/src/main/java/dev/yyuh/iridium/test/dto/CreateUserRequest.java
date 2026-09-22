@@ -1,4 +1,4 @@
-package dev.yyuh.iridium.test;
+package dev.yyuh.iridium.test.dto;
 
 import de.yyuh.iridium.core.validation.annotation.AssertTrue;
 import de.yyuh.iridium.core.validation.annotation.Email;
