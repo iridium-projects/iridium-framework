@@ -1,11 +1,9 @@
 package dev.yyuh.iridium.json.avaje;
 
-import de.yyuh.iridium.core.annotation.Internal;
 import de.yyuh.iridium.core.component.Component;
 import dev.yyuh.iridium.json.Json;
 import io.avaje.jsonb.Jsonb;
 
-@Internal
 @Component
 public final class AvajeJson implements Json {
 

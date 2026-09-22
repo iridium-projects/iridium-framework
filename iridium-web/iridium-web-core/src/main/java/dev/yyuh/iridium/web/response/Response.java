@@ -1,8 +1,5 @@
 package dev.yyuh.iridium.web.response;
 
-import dev.yyuh.iridium.json.Json;
-
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,19 +29,6 @@ public final class Response<T> {
 
     public T body() {
         return body;
-    }
-
-    public byte[] bodyBytes(final Json json) {
-        if (body == null) {
-            return new byte[0];
-        }
-        if (body instanceof byte[] bytes) {
-            return bytes;
-        }
-        if (body instanceof String string) {
-            return string.getBytes(StandardCharsets.UTF_8);
-        }
-        return json.serializeBytes(body);
     }
 
     public static BodyBuilder ok() {
@@ -77,7 +61,7 @@ public final class Response<T> {
 
     public interface BodyBuilder {
 
-        BodyBuilder header(String name, String value);
+        BodyBuilder header(final String name, final String value);
 
         <T> Response<T> body(T body);
 

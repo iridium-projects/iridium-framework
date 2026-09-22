@@ -10,7 +10,3 @@ dependencies {
         add("annotationProcessor", project(":iridium-codegen"))
     }
 }
-
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-Airidium.module=${project.name}")
-}
