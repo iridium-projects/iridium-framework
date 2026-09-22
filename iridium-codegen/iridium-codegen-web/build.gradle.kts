@@ -1,0 +1,14 @@
+plugins {
+  id("java")
+  id("iridium.common-convention")
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies() {
+  api(project(":iridium-codegen:iridium-codegen-core"))
+  api(project(":iridium-web:iridium-web-core"))
+  implementation("com.io7m.jodist:com.io7m.jodist.core:2.0.1")
+}

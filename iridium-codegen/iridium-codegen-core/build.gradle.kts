@@ -1,6 +1,6 @@
 plugins {
   id("java")
-  id("iridium.module-convention")
+  id("iridium.common-convention")
 }
 
 repositories {
@@ -8,6 +8,6 @@ repositories {
 }
 
 dependencies() {
+  api(project(":iridium-core"))
   implementation("com.io7m.jodist:com.io7m.jodist.core:2.0.1")
-  api(project(":iridium-web:iridium-web-core"))
 }

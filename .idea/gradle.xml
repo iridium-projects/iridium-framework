@@ -20,6 +20,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/iridium-codegen" />
+            <option value="$PROJECT_DIR$/iridium-codegen/iridium-codegen-core" />
+            <option value="$PROJECT_DIR$/iridium-codegen/iridium-codegen-web" />
             <option value="$PROJECT_DIR$/iridium-core" />
             <option value="$PROJECT_DIR$/iridium-json" />
             <option value="$PROJECT_DIR$/iridium-json/iridium-json-avaje" />

@@ -12,7 +12,8 @@ plugins {
 
 rootProject.name = "iridium"
 include("iridium-core")
-include("iridium-codegen")
+include("iridium-codegen:iridium-codegen-core")
+include("iridium-codegen:iridium-codegen-web")
 include("iridium-json:iridium-json-core")
 include("iridium-json:iridium-json-avaje")
 include("iridium-test")
