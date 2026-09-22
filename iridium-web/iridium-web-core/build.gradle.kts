@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("iridium.common-convention")
+    id("iridium.module-convention")
 }
 
 repositories {
@@ -8,5 +8,5 @@ repositories {
 }
 
 dependencies() {
-    api(project(":iridium-core"))
+    api(project(":iridium-json:iridium-json-core"))
 }

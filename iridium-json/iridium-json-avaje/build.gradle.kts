@@ -8,5 +8,6 @@ repositories {
 }
 
 dependencies() {
-  implementation("com.io7m.jodist:com.io7m.jodist.core:2.0.1")
+  api(project(":iridium-json:iridium-json-core"))
+  api("io.avaje:avaje-jsonb:3.16")
 }

@@ -8,5 +8,4 @@ repositories {
 }
 
 dependencies() {
-  implementation("com.io7m.jodist:com.io7m.jodist.core:2.0.1")
 }
