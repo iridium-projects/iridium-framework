@@ -1,121 +1,68 @@
-[![wakatime](https://wakatime.com/badge/user/dd51c621-143b-4311-843c-7ee475851640/project/e41172fe-f898-40de-b667-0636e166c30d.svg)](https://wakatime.com/badge/user/dd51c621-143b-4311-843c-7ee475851640/project/e41172fe-f898-40de-b667-0636e166c30d)
-
 <div align="center">
-  <img src="img/logo.png" alt="Logo" height="240">
+  <img src="img/logo.png" alt="Iridium" height="240">
+  <h1>Iridium</h1>
+  <p>Full-stack framework for Java 25.</p>
 </div>
 
-# Iridium
+<br>
 
-A lightweight, annotation-driven HTTP micro-framework for Java 25. Zero external server dependencies — Inspired by Spring Boot but purposefully minimal.
+Iridium is an annotation-driven framework: routing, dependency injection, and validation are generated at compile time. There is no reflection container and no runtime classpath scan.
 
-## Quick Start
+Inspired by Spring Boot. Built to stay small.
 
-### 1. Create a controller
+## Getting started
+
+```kotlin
+plugins {
+    id("cc.asylum.iridium")
+}
+
+application {
+    mainClass = "example.Application"
+}
+```
 
 ```java
-import cc.asylum.iridium.web.controller.type.RestController;
-import cc.asylum.iridium.web.request.RequestContext;
-import cc.asylum.iridium.web.request.type.GET;
-import cc.asylum.iridium.web.request.type.POST;
-import cc.asylum.iridium.web.response.Response;
+@WebApplication
+public final class Application {
 
+    public static void main(final String[] args) {
+        Iridium.run(Application.class, args);
+    }
+}
+```
+
+```java
 @RestController
 public final class HelloController {
 
     @GET("/hello")
-    public Response hello(final RequestContext ctx) {
-        final var name = ctx.queryParam("name").orElse("world");
-        return Response.ok().text("Hello, " + name + "!");
-    }
-
-    @POST("/echo")
-    public Response echo(final RequestContext ctx) {
-        return ctx.body()
-                .map(Response::ok)
-                .unwrapOrElse(err -> Response.badRequest(err.getMessage()));
+    public Response<?> hello(@RequestParam(defaultValue = "world") final String name) {
+        return Response.ok("Hello, " + name + "!");
     }
 }
 ```
-
-### 2. Bootstrap
-
-```java
-import cc.asylum.iridium.web.Iridium;
-import cc.asylum.iridium.web.IridiumBootstrap;
-
-@IridiumBootstrap(port = 8080, host = "0.0.0.0")
-public final class Main {
-    public static void main(final String[] args) {
-        Iridium.run(Main.class, args);
-    }
-}
-```
-
-### 3. Run
 
 ```bash
-curl http://localhost:8080/hello?name=iridium
-# → Hello, iridium!
+./gradlew run
 ```
 
-## Request Handling
+## Features
 
-Each controller method takes a `RequestContext` and returns a `Response`.
+- Compile-time dependency injection (`@Component`)
+- Annotation-based HTTP routing (`@RestController`, `@GET`, `@POST`, …)
+- Request binding (`@PathVariable`, `@RequestParam`, `@RequestBody`, …)
+- Bean Validation–style constraints, generated
+- Pluggable HTTP server and JSON implementation
+- Gradle plugin that wires processors, the default stack, and a fat JAR
 
-```java
-@GET("/users/{id}")
-public Response getUser(final RequestContext ctx) {
-    final var token = ctx.requestHeader("Authorization");
-    // → Optional<String>
+Default stack: Undertow + Avaje Jsonb. Swap in another server or JSON library by depending on a different extension.
 
-    final var params = ctx.queryParams();
-    // → Map<String, List<String>>
+## Requirements
 
-    final var body = ctx.body();
-    // → Result<String, IOException>
+- Java 25
+- Gradle 9
 
-    return Response.ok().json("{\"id\": 1}");
-}
-```
+## License
 
-## Response Builder
-
-```java
-Response.ok()                          // 200, empty body
-Response.ok("hello")                   // 200, text body
-Response.created(json)                 // 201
-Response.noContent()                   // 204
-Response.badRequest("invalid")         // 400
-Response.notFound("missing")           // 404
-Response.status(418)                   // custom status
-
-Response.ok()
-    .json(body)                        // Content-Type: application/json
-    .header("X-Request-Id", "abc123") // custom header
-```
-
-Responses are immutable records — headers accumulate via copy-on-write.
-
-## Available Annotations
-
-| Annotation | HTTP Method | Target |
-|-----------|-------------|--------|
-| `@GET("/path")` | GET | Method |
-| `@POST("/path")` | POST | Method |
-| `@PUT("/path")` | PUT | Method |
-| `@PATCH("/path")` | PATCH | Method |
-| `@DELETE("/path")` | DELETE | Method |
-| `@HEAD("/path")` | HEAD | Method |
-| `@OPTIONS("/path")` | OPTIONS | Method |
-| `@RestController` | — | Class |
-| `@IridiumBootstrap` | — | Class (main) |
-
-## Build
-
-Requires Java 25.
-
-```bash
-./gradlew build
-```
-
-<img src="https://yyuh.beer/banners/vim-tenor.gif" width="88" height="33" />
+See [LICENSE](LICENSE) if present.
