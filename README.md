@@ -65,4 +65,4 @@ Default stack: Undertow + Avaje Jsonb. Swap in another server or JSON library by
 
 ## License
 
-See [LICENSE](LICENSE) if present.
+Licensed under the [Apache License 2.0](LICENSE.txt).
