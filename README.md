@@ -1,13 +1,11 @@
 <div align="center">
   <img src="img/logo.png" alt="Iridium" height="240">
-  <h1>Iridium</h1>
-  <p>Full-stack framework for Java 25.</p>
 </div>
 
 <br>
 
-Iridium is an annotation-driven framework: routing, dependency injection, and validation are generated at compile time. There is no reflection container and no runtime classpath scan.
-
+# Iridium
+Hardwired Java. Full-stack framework built to endure and work in every environment. Zero Reflection. Zero Guesswork.
 Inspired by Spring Boot. Built to stay small.
 
 ## Getting started
