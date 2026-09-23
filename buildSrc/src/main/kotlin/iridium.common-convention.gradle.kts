@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow")
 }
 
-group = "de.yyuh"
+group = "cc.asylum"
 
 java {
     toolchain {

@@ -13,11 +13,11 @@ A lightweight, annotation-driven HTTP micro-framework for Java 25. Zero external
 ### 1. Create a controller
 
 ```java
-import de.yyuh.iridium.web.controller.type.RestController;
-import de.yyuh.iridium.web.request.RequestContext;
-import de.yyuh.iridium.web.request.type.GET;
-import de.yyuh.iridium.web.request.type.POST;
-import de.yyuh.iridium.web.response.Response;
+import cc.asylum.iridium.web.controller.type.RestController;
+import cc.asylum.iridium.web.request.RequestContext;
+import cc.asylum.iridium.web.request.type.GET;
+import cc.asylum.iridium.web.request.type.POST;
+import cc.asylum.iridium.web.response.Response;
 
 @RestController
 public final class HelloController {
@@ -40,8 +40,8 @@ public final class HelloController {
 ### 2. Bootstrap
 
 ```java
-import de.yyuh.iridium.web.Iridium;
-import de.yyuh.iridium.web.IridiumBootstrap;
+import cc.asylum.iridium.web.Iridium;
+import cc.asylum.iridium.web.IridiumBootstrap;
 
 @IridiumBootstrap(port = 8080, host = "0.0.0.0")
 public final class Main {

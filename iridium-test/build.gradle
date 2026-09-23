@@ -1,33 +1,17 @@
 plugins {
-    id 'java'
+    id 'cc.asylum.iridium'
 }
 
-group = 'dev.yyuh.iridium.test'
-version = 'unspecified'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
+group = 'cc.asylum.iridium.test'
 
 dependencies {
-    implementation project(':iridium-core')
-    implementation project(':iridium-codegen:iridium-codegen-core')
-    implementation project(':iridium-codegen:iridium-codegen-web')
-    implementation project(':iridium-web:iridium-web-core')
-    implementation project(':iridium-web:iridium-web-undertow')
-    implementation project(':iridium-json:iridium-json-avaje')
-    annotationProcessor project(':iridium-codegen:iridium-codegen-core')
-    annotationProcessor project(':iridium-codegen:iridium-codegen-web')
-
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'cc.asylum.iridium.test.Application'
 }
 
 test {
