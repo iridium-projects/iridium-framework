@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>iridium-codegen-core</name>
-	<comment>Project iridium-codegen-core created by Buildship.</comment>
+	<name>iridium-iridium</name>
+	<comment>Project iridium-iridium created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -22,7 +22,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1790103463927</id>
+			<id>1790178870637</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

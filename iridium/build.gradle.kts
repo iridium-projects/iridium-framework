@@ -8,10 +8,10 @@ repositories {
 }
 
 dependencies() {
-  api(project(":iridium-web:iridium-web-core"))
-  api(project(":iridium-web:iridium-web-undertow"))
-  api(project(":iridium-json:iridium-json-core"))
-  api(project(":iridium-json:iridium-json-avaje"))
-  api(project(":iridium-codegen:iridium-codegen-core"))
-  api(project(":iridium-codegen:iridium-codegen-web"))
+  api(project(":iridium-web"))
+  api(project(":iridium-web-undertow"))
+  api(project(":iridium-json"))
+  api(project(":iridium-json-avaje"))
+  api(project(":iridium-codegen"))
+  api(project(":iridium-codegen-web"))
 }

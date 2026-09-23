@@ -8,8 +8,8 @@ repositories {
 }
 
 dependencies() {
-    api(project(":iridium-web:iridium-web-core"))
-    api(project(":iridium-json:iridium-json-core"))
+    api(project(":iridium-web"))
+    api(project(":iridium-json"))
 
     implementation("io.undertow:undertow-core:2.4.3.Final")
 

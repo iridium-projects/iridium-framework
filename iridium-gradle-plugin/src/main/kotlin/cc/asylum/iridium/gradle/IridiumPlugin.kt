@@ -38,18 +38,18 @@ class IridiumPlugin : Plugin<Project> {
       project.dependencies.add("implementation", local)
       project.dependencies.add(
         "annotationProcessor",
-        project.rootProject.project(":iridium-codegen:iridium-codegen-core"),
+        project.rootProject.project(":iridium-codegen"),
       )
       project.dependencies.add(
         "annotationProcessor",
-        project.rootProject.project(":iridium-codegen:iridium-codegen-web"),
+        project.rootProject.project(":iridium-codegen-web"),
       )
       return
     }
 
     val version = project.findProperty("iridium.version") as String? ?: "0.1.0"
     project.dependencies.add("implementation", "cc.asylum:iridium:$version")
-    project.dependencies.add("annotationProcessor", "cc.asylum:iridium-codegen-core:$version")
+    project.dependencies.add("annotationProcessor", "cc.asylum:iridium-codegen:$version")
     project.dependencies.add("annotationProcessor", "cc.asylum:iridium-codegen-web:$version")
   }
 }
