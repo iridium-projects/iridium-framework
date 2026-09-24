@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 
 public final class Config {
 
@@ -118,23 +117,20 @@ public final class Config {
 
   public static <E extends Enum<E>> Result<E, ConfigError> enumeration(
       final String key,
-      final Class<E> type
-  ) {
+      final Class<E> type) {
     return required(key, value -> parseEnum(value, type));
   }
 
   public static <E extends Enum<E>> Result<E, ConfigError> enumeration(
       final String key,
       final Class<E> type,
-      final E fallback
-  ) {
+      final E fallback) {
     return orElse(key, fallback, value -> parseEnum(value, type));
   }
 
   public static <E extends Enum<E>> Result<E, ConfigError> parseEnum(
       final String value,
-      final Class<E> type
-  ) {
+      final Class<E> type) {
     for (final E constant : type.getEnumConstants()) {
       if (constant.name().equalsIgnoreCase(value.trim())) {
         return Result.ok(constant);
@@ -169,15 +165,13 @@ public final class Config {
 
   public static <T> Result<List<T>, ConfigError> list(
       final String key,
-      final Function<String, Result<T, ConfigError>> convert
-  ) {
+      final Function<String, Result<T, ConfigError>> convert) {
     return sources().flatMap(loaded -> readList(loaded, key, convert));
   }
 
   public static <T> Result<List<T>, ConfigError> indexed(
       final String prefix,
-      final Function<Integer, Result<T, ConfigError>> factory
-  ) {
+      final Function<Integer, Result<T, ConfigError>> factory) {
     return sources().flatMap(loaded -> {
       final List<Result<T, ConfigError>> items = new ArrayList<>();
       for (int i = 0; loaded.hasIndex(prefix, i); i++) {
@@ -189,8 +183,7 @@ public final class Config {
 
   public static <T> Result<Map<String, T>, ConfigError> map(
       final String prefix,
-      final Function<String, Result<T, ConfigError>> convert
-  ) {
+      final Function<String, Result<T, ConfigError>> convert) {
     return sources().flatMap(loaded -> {
       final Map<String, T> result = new LinkedHashMap<>();
       for (final Map.Entry<String, String> entry : loaded.children(prefix).entrySet()) {
@@ -211,8 +204,7 @@ public final class Config {
   private static <T> Result<List<T>, ConfigError> readList(
       final Sources loaded,
       final String key,
-      final Function<String, Result<T, ConfigError>> convert
-  ) {
+      final Function<String, Result<T, ConfigError>> convert) {
     if (loaded.hasIndex(key, 0)) {
       final List<Result<T, ConfigError>> indexed = new ArrayList<>();
       for (int i = 0; loaded.hasIndex(key, i); i++) {
@@ -253,8 +245,7 @@ public final class Config {
 
   private static <T> Result<T, ConfigError> required(
       final String key,
-      final Function<String, Result<T, ConfigError>> parse
-  ) {
+      final Function<String, Result<T, ConfigError>> parse) {
     return sources().flatMap(loaded -> {
       final String value = loaded.get(key);
       if (value == null) {
@@ -267,8 +258,7 @@ public final class Config {
   private static <T> Result<T, ConfigError> orElse(
       final String key,
       final T fallback,
-      final Function<String, Result<T, ConfigError>> parse
-  ) {
+      final Function<String, Result<T, ConfigError>> parse) {
     return sources().flatMap(loaded -> {
       final String value = loaded.get(key);
       if (value == null) {
@@ -280,8 +270,7 @@ public final class Config {
 
   private static <T> Result<T, ConfigError> parse(
       final String value,
-      final Function<String, T> parser
-  ) {
+      final Function<String, T> parser) {
     try {
       return Result.ok(parser.apply(value.trim()));
     } catch (final RuntimeException exception) {

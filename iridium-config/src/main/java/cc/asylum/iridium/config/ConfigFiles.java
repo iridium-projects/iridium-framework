@@ -25,8 +25,7 @@ final class ConfigFiles {
   static Result<Unit, ConfigError> load(
       final ClassLoader loader,
       final Sources.Layer files,
-      final String profile
-  ) {
+      final String profile) {
     final String suffix = profile.isEmpty() ? "" : "-" + profile;
     return loadProperties(loader, files, "application" + suffix + ".properties")
         .flatMap(ignored -> loadYaml(loader, files, "application" + suffix + ".yaml"))
@@ -36,8 +35,7 @@ final class ConfigFiles {
   static void flatten(
       final String prefix,
       final Object node,
-      final Map<String, String> out
-  ) {
+      final Map<String, String> out) {
     if (node instanceof final Map<?, ?> map) {
       for (final Map.Entry<?, ?> entry : map.entrySet()) {
         flatten(Keys.join(prefix, String.valueOf(entry.getKey())), entry.getValue(), out);
@@ -60,8 +58,7 @@ final class ConfigFiles {
   private static Result<Unit, ConfigError> loadProperties(
       final ClassLoader loader,
       final Sources.Layer files,
-      final String name
-  ) {
+      final String name) {
     final URL url = loader.getResource(name);
     if (url == null) {
       return Result.ok(Unit.INSTANCE);
@@ -83,8 +80,7 @@ final class ConfigFiles {
   private static Result<Unit, ConfigError> loadYaml(
       final ClassLoader loader,
       final Sources.Layer files,
-      final String name
-  ) {
+      final String name) {
     final URL url = loader.getResource(name);
     if (url == null) {
       return Result.ok(Unit.INSTANCE);

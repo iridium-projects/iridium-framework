@@ -14,8 +14,7 @@ public abstract class Repository<E, ID> {
   protected Repository(
       final JSqlClient sql,
       final Class<E> entityType,
-      final TableProxy<E> table
-  ) {
+      final TableProxy<E> table) {
     this.sql = sql;
     this.entityType = entityType;
     this.table = table;
