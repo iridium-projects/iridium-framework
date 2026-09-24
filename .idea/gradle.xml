@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -11,25 +12,31 @@
                   <project path="$PROJECT_DIR$/buildSrc" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/iridium-gradle-plugin" name="iridium-gradle-plugin">
+                <projects>
+                  <project path="$PROJECT_DIR$/iridium-gradle-plugin" />
+                </projects>
+              </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="ms-25" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/demos/iridium-demo-hello" />
+            <option value="$PROJECT_DIR$/extensions/iridium-json-avaje" />
+            <option value="$PROJECT_DIR$/extensions/iridium-log" />
+            <option value="$PROJECT_DIR$/extensions/iridium-web-undertow" />
+            <option value="$PROJECT_DIR$/iridium" />
             <option value="$PROJECT_DIR$/iridium-codegen" />
-            <option value="$PROJECT_DIR$/iridium-codegen/iridium-codegen-core" />
-            <option value="$PROJECT_DIR$/iridium-codegen/iridium-codegen-web" />
+            <option value="$PROJECT_DIR$/iridium-config" />
             <option value="$PROJECT_DIR$/iridium-core" />
+            <option value="$PROJECT_DIR$/iridium-gradle-plugin" />
             <option value="$PROJECT_DIR$/iridium-json" />
-            <option value="$PROJECT_DIR$/iridium-json/iridium-json-avaje" />
-            <option value="$PROJECT_DIR$/iridium-json/iridium-json-core" />
-            <option value="$PROJECT_DIR$/iridium-test" />
             <option value="$PROJECT_DIR$/iridium-web" />
-            <option value="$PROJECT_DIR$/iridium-web/iridium-web-core" />
-            <option value="$PROJECT_DIR$/iridium-web/iridium-web-undertow" />
           </set>
         </option>
       </GradleProjectSettings>

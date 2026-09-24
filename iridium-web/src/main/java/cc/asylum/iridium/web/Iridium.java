@@ -26,12 +26,14 @@ public final class Iridium {
   }
 
   public static void run(final Class<?> application, final String[] args) {
+    Banner.print();
     ServiceLoader.load(ConfigInitializer.class).findFirst().ifPresent(initializer -> initializer.prepare(args));
     new Iridium(application).start();
   }
 
   private void start() {
     final var poolInitialized = BeanPool.initialize();
+
     if (poolInitialized.isErr()) {
       final var exception = poolInitialized.unwrapErr();
       final var message = exception.getMessage();
@@ -41,9 +43,10 @@ public final class Iridium {
       System.exit(1);
       return;
     }
-    final var server = WebServer.load();
 
+    final var server = WebServer.load();
     final Result<Unit, Exception> started = server.start(config.port(), config.host());
+
     if (started.isErr()) {
       final var exception = started.unwrapErr();
       final var message = exception.getMessage();
