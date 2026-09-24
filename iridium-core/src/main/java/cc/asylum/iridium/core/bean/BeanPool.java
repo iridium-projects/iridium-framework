@@ -23,6 +23,7 @@ public final class BeanPool {
     beans.put(name, bean);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T get(final String name) {
     return (T) beans.get(name);
   }
@@ -31,7 +32,7 @@ public final class BeanPool {
     final List<T> matches = beans.values().stream()
         .filter(type::isInstance)
         .map(type::cast)
-        .collect(Collectors.toList());
+        .toList();
 
     if (matches.isEmpty()) {
       return null;
@@ -47,7 +48,7 @@ public final class BeanPool {
     return beans.values().stream()
         .filter(type::isInstance)
         .map(type::cast)
-        .collect(Collectors.toUnmodifiableList());
+        .toList();
   }
 
   public static Result<Unit, Exception> initialize() {

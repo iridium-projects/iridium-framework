@@ -1,5 +1,6 @@
 package cc.asylum.iridium.web.undertow;
 
+import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.result.Unit;
 import cc.asylum.iridium.web.router.Request;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Internal
 public final class UndertowWebServer implements WebServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(UndertowWebServer.class);
@@ -63,6 +65,7 @@ public final class UndertowWebServer implements WebServer {
   public void stop() {
     LOG.info("Stopping Undertow server");
     WebServer.super.stop();
+
     if (undertow != null) {
       undertow.stop();
     }
@@ -73,16 +76,23 @@ public final class UndertowWebServer implements WebServer {
       exchange.dispatch(this::handle);
       return;
     }
+
     final long start = System.nanoTime();
+
     try {
       final Request request = toRequest(exchange);
       final Response<?> response = router.dispatch(request);
+
       write(exchange, response);
-      LOG.debug("{} {} -> {} ({} ms)", request.method(), request.path(),
-          response.status(), elapsedMillis(start));
+
+      LOG.debug("{} {} -> {} ({} ms)",
+        request.method(),
+        request.path(),
+        response.status(),
+        elapsedMillis(start)
+      );
     } catch (final Exception e) {
-      LOG.error("Unhandled exception while processing {} {}",
-          exchange.getRequestMethod(), exchange.getRequestURI(), e);
+      LOG.error("Unhandled exception while processing {} {}", exchange.getRequestMethod(), exchange.getRequestURI(), e);
       sendError(exchange);
     }
   }
@@ -111,7 +121,10 @@ public final class UndertowWebServer implements WebServer {
         body);
   }
 
-  private void write(final HttpServerExchange exchange, final Response<?> response) throws Exception {
+  private void write(
+    final HttpServerExchange exchange,
+    final Response<?> response
+  ) throws Exception {
     exchange.setStatusCode(response.status());
     response.headers().forEach((name, value) -> exchange.getResponseHeaders().put(new HttpString(name), value));
 
@@ -128,11 +141,15 @@ public final class UndertowWebServer implements WebServer {
     }
   }
 
-  private void sendBody(final HttpServerExchange exchange, final byte[] body) throws Exception {
+  private void sendBody(
+    final HttpServerExchange exchange,
+    final byte[] body
+  ) throws Exception {
     if (exchange.isBlocking()) {
       exchange.getOutputStream().write(body);
       return;
     }
+
     exchange.getResponseSender().send(ByteBuffer.wrap(body));
   }
 
