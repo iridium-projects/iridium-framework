@@ -2,16 +2,16 @@ package cc.asylum.iridium.codegen.processor;
 
 import com.io7m.jodist.ClassName;
 import com.io7m.jodist.MethodSpec;
-import com.io7m.jodist.TypeName;
-import com.io7m.jodist.TypeSpec;
 import cc.asylum.iridium.codegen.IridiumProcessor;
+import cc.asylum.iridium.codegen.support.ModelSupport;
+import cc.asylum.iridium.codegen.support.SourceWriter;
+import cc.asylum.iridium.codegen.writer.HookWriter;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.bean.Bean;
 import cc.asylum.iridium.core.bean.BeanPool;
 import cc.asylum.iridium.core.bean.BeanRegistrar;
 import cc.asylum.iridium.core.component.Component;
 import cc.asylum.iridium.core.hook.OnShutdown;
-import cc.asylum.iridium.core.hook.ShutdownHook;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.ElementKind;
@@ -35,14 +35,15 @@ public final class BeanProcessor extends IridiumProcessor {
 
   @Override
   protected void processRound(final RoundEnvironment roundEnv) {
-    final Set<TypeElement> components = annotatedTypes(roundEnv, Component.class, ElementKind.CLASS);
-    final Set<ExecutableElement> beanMethods = annotatedMethods(roundEnv, Bean.class);
-    final Set<ExecutableElement> hookMethods = annotatedMethods(roundEnv, OnShutdown.class);
+    final Set<TypeElement> components = ModelSupport.annotatedTypes(roundEnv, Component.class, ElementKind.CLASS);
+    final Set<ExecutableElement> beanMethods = ModelSupport.annotatedMethods(roundEnv, Bean.class);
+    final Set<ExecutableElement> hookMethods = ModelSupport.annotatedMethods(roundEnv, OnShutdown.class);
     if (components.isEmpty() && beanMethods.isEmpty() && hookMethods.isEmpty()) {
       return;
     }
 
-    final String pkg = generatedPackage(rootTypes(roundEnv, ElementKind.CLASS, ElementKind.RECORD));
+    final var roots = ModelSupport.rootTypes(roundEnv, ElementKind.CLASS, ElementKind.RECORD);
+    final String pkg = ModelSupport.generatedPackage(elements, roots);
 
     final MethodSpec.Builder register = MethodSpec.methodBuilder("register")
         .addAnnotation(Override.class)
@@ -51,12 +52,12 @@ public final class BeanProcessor extends IridiumProcessor {
 
     for (final TypeElement component : components) {
       final ClassName type = ClassName.get(component);
-      final ExecutableElement constructor = resolveConstructor(component);
+      final ExecutableElement constructor = ModelSupport.resolveConstructor(component);
       if (constructor == null) {
-        register.addStatement("pool.put($S, new $T())", decapitalize(type.simpleName()), type);
+        register.addStatement("pool.put($S, new $T())", ModelSupport.decapitalize(type.simpleName()), type);
       } else {
         register.addStatement("pool.put($S, new $T($L))",
-            decapitalize(type.simpleName()), type, dependencyArgs(constructor));
+            ModelSupport.decapitalize(type.simpleName()), type, ModelSupport.dependencyArgs(constructor));
       }
     }
 
@@ -64,35 +65,23 @@ public final class BeanProcessor extends IridiumProcessor {
       final TypeElement enclosing = (TypeElement) method.getEnclosingElement();
       final String methodName = method.getSimpleName().toString();
       register.addStatement("pool.put($S, new $T().$N($L))",
-          methodName, ClassName.get(enclosing), methodName, dependencyArgs(method));
+          methodName, ClassName.get(enclosing), methodName, ModelSupport.dependencyArgs(method));
     }
 
     for (final ExecutableElement method : hookMethods) {
       final TypeElement enclosing = (TypeElement) method.getEnclosingElement();
-      final ClassName enclosingType = ClassName.get(enclosing);
       final String methodName = method.getSimpleName().toString();
       final int priority = method.getAnnotation(OnShutdown.class).priority();
-      final TypeSpec hookImpl = TypeSpec.anonymousClassBuilder("")
-          .addSuperinterface(ClassName.get(ShutdownHook.class))
-          .addMethod(MethodSpec.methodBuilder("run")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .addStatement("new $T().$N()", enclosingType, methodName)
-              .build())
-          .addMethod(MethodSpec.methodBuilder("priority")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(TypeName.INT)
-              .addStatement("return $L", priority)
-              .build())
-          .build();
-      register.addStatement("pool.put($S, $L)", enclosing.getQualifiedName() + "." + methodName, hookImpl);
+      register.addStatement("pool.put($S, $L)",
+          enclosing.getQualifiedName() + "." + methodName,
+          HookWriter.shutdownHook(ClassName.get(enclosing), methodName, priority));
     }
 
-    writeJava(pkg, generatedType(GENERATED_CLASS)
+    SourceWriter.writeJava(filer, pkg, SourceWriter.generatedType(GENERATED_CLASS)
         .addSuperinterface(ClassName.get(BeanRegistrar.class))
         .addMethod(register.build())
-        .build());
-    writeService(BeanRegistrar.class, pkg + "." + GENERATED_CLASS);
+        .build(), roots.toArray(new TypeElement[0]));
+    SourceWriter.writeService(filer, BeanRegistrar.class, pkg + "." + GENERATED_CLASS,
+        roots.toArray(new TypeElement[0]));
   }
 }

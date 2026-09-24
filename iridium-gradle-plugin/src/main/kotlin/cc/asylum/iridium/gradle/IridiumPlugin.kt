@@ -5,6 +5,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.application.CreateStartScripts
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 class IridiumPlugin : Plugin<Project> {
@@ -30,6 +31,12 @@ class IridiumPlugin : Plugin<Project> {
       duplicatesStrategy = DuplicatesStrategy.INCLUDE
       mergeServiceFiles()
     }
+
+    val shadowJar = project.tasks.named("shadowJar", ShadowJar::class.java)
+    project.tasks.named("startScripts", CreateStartScripts::class.java).configure {
+      dependsOn(shadowJar)
+      classpath = project.files(shadowJar)
+    }
   }
 
   private fun addDependencies(project: Project) {
@@ -40,16 +47,11 @@ class IridiumPlugin : Plugin<Project> {
         "annotationProcessor",
         project.rootProject.project(":iridium-codegen"),
       )
-      project.dependencies.add(
-        "annotationProcessor",
-        project.rootProject.project(":iridium-codegen-web"),
-      )
       return
     }
 
     val version = project.findProperty("iridium.version") as String? ?: "0.1.0"
     project.dependencies.add("implementation", "cc.asylum:iridium:$version")
     project.dependencies.add("annotationProcessor", "cc.asylum:iridium-codegen:$version")
-    project.dependencies.add("annotationProcessor", "cc.asylum:iridium-codegen-web:$version")
   }
 }

@@ -13,5 +13,4 @@ dependencies() {
   api(project(":iridium-json"))
   api(project(":iridium-json-avaje"))
   api(project(":iridium-codegen"))
-  api(project(":iridium-codegen-web"))
 }

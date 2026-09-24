@@ -15,6 +15,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +30,32 @@ public final class InternalUsageProcessor extends AbstractProcessor {
   @Override
   public synchronized void init(final javax.annotation.processing.ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    this.trees = Trees.instance(processingEnv);
+    this.trees = resolveTrees(processingEnv);
+  }
+
+  private static Trees resolveTrees(javax.annotation.processing.ProcessingEnvironment environment) {
+    for (int depth = 0; depth < 4 && environment != null; depth++) {
+      try {
+        return Trees.instance(environment);
+      } catch (final IllegalArgumentException notCompilersOwn) {
+        environment = delegateOf(environment);
+      }
+    }
+    return null;
+  }
+
+  private static javax.annotation.processing.ProcessingEnvironment delegateOf(
+      final javax.annotation.processing.ProcessingEnvironment environment) {
+    try {
+      final Field field = environment.getClass().getDeclaredField("delegate");
+      field.setAccessible(true);
+      final Object delegate = field.get(environment);
+      return delegate instanceof final javax.annotation.processing.ProcessingEnvironment unwrapped
+          ? unwrapped
+          : null;
+    } catch (final ReflectiveOperationException | SecurityException notUnwrappable) {
+      return null;
+    }
   }
 
   @Override
@@ -39,7 +65,7 @@ public final class InternalUsageProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-    if (roundEnv.processingOver()) {
+    if (roundEnv.processingOver() || trees == null) {
       return false;
     }
 
