@@ -32,17 +32,18 @@ final class Banner {
   }
 
   static void print() {
-    final boolean colors = colors();
     final int markWidth = markWidth();
     final int start = (MARK.length - SLOGAN.length) / 2;
+
     System.out.println();
+
     for (int y = 0; y < MARK.length; y++) {
       final String line = MARK[y];
-      System.out.print(colors ? paint(line, y) : line.substring(LEFT));
+      System.out.print(paint(line, y));
       System.out.print(" ".repeat(markWidth - line.length() + 3));
       final int index = y - start;
       if (index >= 0 && index < SLOGAN.length) {
-        System.out.print(slogan(SLOGAN[index], colors, index == 0));
+        System.out.print(slogan(SLOGAN[index], index == 0));
       }
       System.out.println();
     }
@@ -51,6 +52,7 @@ final class Banner {
 
   private static String paint(final String line, final int y) {
     final StringBuilder out = new StringBuilder();
+
     for (int x = LEFT; x < line.length(); x++) {
       final char glyph = line.charAt(x);
       if (glyph == ' ') {
@@ -59,13 +61,11 @@ final class Banner {
       }
       out.append(foreground(x, y)).append(glyph).append(RESET);
     }
+
     return out.toString();
   }
 
-  private static String slogan(final String text, final boolean colors, final boolean title) {
-    if (!colors) {
-      return text;
-    }
+  private static String slogan(final String text, final boolean title) {
     return (title ? WHITE + "\u001B[1m" : GRAY) + text + RESET;
   }
 
@@ -88,15 +88,5 @@ final class Banner {
       return TEAL;
     }
     return x < 24 ? TEAL : GRAY;
-  }
-
-  private static boolean colors() {
-    final String mode = System.getProperty(
-        "iridium.log.color", System.getenv().getOrDefault("IRIDIUM_LOG_COLOR", "auto"));
-    return switch (mode.toLowerCase(Locale.ROOT)) {
-      case "never", "false" -> false;
-      case "always", "true" -> true;
-      default -> System.getenv("NO_COLOR") == null && !"dumb".equals(System.getenv("TERM"));
-    };
   }
 }

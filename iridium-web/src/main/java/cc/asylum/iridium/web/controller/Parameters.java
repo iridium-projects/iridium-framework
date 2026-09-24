@@ -4,6 +4,7 @@ import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.web.router.Request;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Internal
 public final class Parameters {
@@ -19,8 +20,20 @@ public final class Parameters {
     return request.query(name).orElse(defaultValue);
   }
 
+  public static List<String> queries(final Request request, final String name) {
+    if (request.queryParameters() == null) {
+      return List.of();
+    }
+    final List<String> values = request.queryParameters().get(name);
+    return values == null ? List.of() : values;
+  }
+
   public static String header(final Request request, final String name, final String defaultValue) {
     return request.header(name).orElse(defaultValue);
+  }
+
+  public static List<String> headers(final Request request, final String name) {
+    return request.headers(name);
   }
 
   public static String cookie(final Request request, final String name, final String defaultValue) {

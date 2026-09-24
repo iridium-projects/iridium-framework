@@ -27,6 +27,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/demos/iridium-demo-hello" />
+            <option value="$PROJECT_DIR$/extensions/iridium-data-jimmer" />
             <option value="$PROJECT_DIR$/extensions/iridium-json-avaje" />
             <option value="$PROJECT_DIR$/extensions/iridium-log" />
             <option value="$PROJECT_DIR$/extensions/iridium-web-undertow" />
