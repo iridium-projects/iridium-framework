@@ -7,6 +7,9 @@ import com.io7m.jodist.ParameterizedTypeName;
 import com.io7m.jodist.TypeName;
 import com.io7m.jodist.TypeSpec;
 import com.io7m.jodist.WildcardTypeName;
+import cc.asylum.iridium.codegen.binding.ParameterBinder;
+import cc.asylum.iridium.codegen.binding.ParameterBinderFactory;
+import cc.asylum.iridium.codegen.binding.WebRequestValues;
 import cc.asylum.iridium.codegen.support.Diagnostics;
 import cc.asylum.iridium.codegen.support.MirrorSupport;
 import cc.asylum.iridium.codegen.support.ModelSupport;
@@ -36,6 +39,7 @@ import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 @Internal
 public final class RouteWriter {
@@ -49,6 +53,7 @@ public final class RouteWriter {
   private final Types types;
   private final Elements elements;
   private final Messager messager;
+  private final List<ParameterBinder> binders;
 
   public RouteWriter(
       final Types types,
@@ -58,6 +63,12 @@ public final class RouteWriter {
     this.types = types;
     this.elements = elements;
     this.messager = messager;
+    this.binders = ServiceLoader.load(
+        ParameterBinderFactory.class,
+        ParameterBinderFactory.class.getClassLoader()
+    ).stream()
+        .map(provider -> provider.get().create(types, elements, messager, new WebRequestValues()))
+        .toList();
   }
 
   public record MethodMapping(String httpMethod, String path) {
@@ -150,6 +161,12 @@ public final class RouteWriter {
 
     if (TypeSupport.isSameType(types, elements, type, Request.class)) {
       return Optional.of("_request");
+    }
+
+    for (final ParameterBinder binder : binders) {
+      if (binder.matches(parameter)) {
+        return binder.emit(handle, parameter);
+      }
     }
 
     final AnnotationMirror bindingMirror = MirrorSupport.annotationWithMeta(parameter, RequestBinding.class);

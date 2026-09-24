@@ -26,8 +26,7 @@ final class Sources {
       final Layer arguments,
       final Layer system,
       final Layer files,
-      final Map<String, String> environment
-  ) {
+      final Map<String, String> environment) {
     this.arguments = arguments;
     this.system = system;
     this.files = files;
@@ -38,8 +37,7 @@ final class Sources {
       final ClassLoader loader,
       final String[] args,
       final Map<String, String> environment,
-      final Map<String, String> systemProperties
-  ) {
+      final Map<String, String> systemProperties) {
     final Layer arguments = Layer.of(parseArgs(args == null ? new String[0] : args));
     final Layer system = Layer.of(systemProperties);
     final Map<String, String> env = environment == null ? Map.of() : environment;
@@ -56,8 +54,7 @@ final class Sources {
   static void flatten(
       final String prefix,
       final Object node,
-      final Map<String, String> out
-  ) {
+      final Map<String, String> out) {
     ConfigFiles.flatten(prefix, node, out);
   }
 
@@ -99,8 +96,7 @@ final class Sources {
 
   boolean hasIndex(
       final String prefix,
-      final int index
-  ) {
+      final int index) {
     final String token = prefix + "[" + index + "]";
     final String canonical = Keys.canonical(token);
     return anyStored(key -> key.equals(token)
@@ -166,8 +162,7 @@ final class Sources {
 
   private static String leafChild(
       final String key,
-      final String prefix
-  ) {
+      final String prefix) {
     final String remainder = remainder(key, prefix);
     if (remainder == null || remainder.isEmpty() || remainder.indexOf('.') >= 0 || remainder.indexOf('[') >= 0) {
       return null;
@@ -177,8 +172,7 @@ final class Sources {
 
   private static String remainder(
       final String key,
-      final String prefix
-  ) {
+      final String prefix) {
     if (prefix.isEmpty()) {
       return key;
     }
@@ -196,8 +190,7 @@ final class Sources {
 
   private static boolean matchesPrefix(
       final String key,
-      final String prefix
-  ) {
+      final String prefix) {
     if (key.equals(prefix) || key.startsWith(prefix + ".") || key.startsWith(prefix + "[")) {
       return true;
     }
@@ -212,13 +205,11 @@ final class Sources {
   private static Result<List<String>, ConfigError> profiles(
       final Layer arguments,
       final Layer system,
-      final Map<String, String> environment
-  ) {
+      final Map<String, String> environment) {
     final String raw = firstNonBlank(
         arguments.get("iridium.profiles"),
         system.get("iridium.profiles"),
-        environment.get("IRIDIUM_PROFILES")
-    );
+        environment.get("IRIDIUM_PROFILES"));
     if (raw == null) {
       return Result.ok(List.of());
     }
@@ -284,8 +275,7 @@ final class Sources {
 
     void put(
         final String key,
-        final String value
-    ) {
+        final String value) {
       if (key == null || value == null) {
         return;
       }
