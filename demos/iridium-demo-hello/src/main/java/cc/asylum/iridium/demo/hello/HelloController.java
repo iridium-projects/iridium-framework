@@ -18,17 +18,17 @@ public final class HelloController {
   }
 
   @GET("/hello")
-  public Response<String> hello(@RequestParam(defaultValue = "world") final String name) {
+  public Response<String> hello(final @RequestParam(defaultValue = "world") String name) {
     return Response.ok(service.greet(name));
   }
 
   @GET("/hello/{name}")
-  public Response<String> helloPath(@PathVariable("name") final String name) {
+  public Response<String> helloPath(final @PathVariable("name") String name) {
     return Response.ok(service.greet(name));
   }
 
   @POST("/echo")
-  public Response<String> echo(@RequestBody final String body) {
+  public Response<String> echo(final @RequestBody String body) {
     return Response.ok(body);
   }
 }

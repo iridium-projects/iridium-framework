@@ -23,7 +23,7 @@ public class HotReloadingAgent {
   }
 
   void start(final String args) {
-    final var watchDir = Path.of(args == null || args.isBlank() ? "target/classes" : args)
+    final var watchDir = Path.of(args == null || args.isBlank() ? "build/classes/java/main" : args)
         .toAbsolutePath()
         .normalize();
 

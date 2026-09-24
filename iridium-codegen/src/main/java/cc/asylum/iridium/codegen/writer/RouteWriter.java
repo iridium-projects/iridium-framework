@@ -116,7 +116,7 @@ public final class RouteWriter {
   }
 
   public Optional<TypeSpec> routeHandler(
-      final String controllerVar,
+      final TypeElement controller,
       final ExecutableElement method
   ) {
     final TypeName responseWildcard = ParameterizedTypeName.get(
@@ -140,8 +140,10 @@ public final class RouteWriter {
     }
 
     handle.addStatement(
-        "return $L.$N($L)",
-        controllerVar,
+        "return $T.instance().< $T >get($T.class).$N($L)",
+        BEAN_POOL,
+        ClassName.get(controller),
+        ClassName.get(controller),
         method.getSimpleName().toString(),
         String.join(", ", arguments)
     );

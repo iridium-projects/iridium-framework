@@ -38,6 +38,7 @@ class WebProcessorTest {
 
     final String registrar =
         ProcessorHarness.generatedSource(result, "test", "gen", "WebRegistrarGenerated.java");
+    assertTrue(registrar.contains("BeanPool.instance().< WebFixture >get(WebFixture.class).hello("), registrar);
     assertTrue(registrar.contains("router.register(\"GET\", \"/hello\""), registrar);
     assertTrue(registrar.contains("router.register(\"GET\", \"/greet\""), registrar);
     assertTrue(registrar.contains("Parameters.query(_request, \"name\", \"world\")"), registrar);

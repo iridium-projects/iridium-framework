@@ -13,10 +13,16 @@ public final class Validation {
   private Validation() {
   }
 
+  public static synchronized void reset() {
+    REGISTRY.clear();
+    initialized = false;
+  }
+
   public static synchronized void initialize() {
     if (initialized) {
       return;
     }
+    REGISTRY.clear();
     for (final ValidationRegistrar registrar : ServiceLoader.load(ValidationRegistrar.class)) {
       registrar.register(REGISTRY);
     }

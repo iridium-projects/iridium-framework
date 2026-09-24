@@ -16,6 +16,7 @@ import cc.asylum.iridium.core.bean.BeanPool;
 import cc.asylum.iridium.core.bean.BeanRegistrar;
 import cc.asylum.iridium.core.component.Component;
 import cc.asylum.iridium.core.hook.OnShutdown;
+import cc.asylum.iridium.web.controller.RestController;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.ElementKind;
@@ -34,6 +35,7 @@ public final class BeanProcessor extends IridiumProcessor {
   public Set<String> getSupportedAnnotationTypes() {
     return Set.of(
         Component.class.getCanonicalName(),
+        RestController.class.getCanonicalName(),
         Bean.class.getCanonicalName(),
         OnShutdown.class.getCanonicalName(),
         ConfigurationProperties.class.getCanonicalName());
@@ -41,7 +43,9 @@ public final class BeanProcessor extends IridiumProcessor {
 
   @Override
   protected void processRound(final RoundEnvironment roundEnv) {
-    final Set<TypeElement> components = ModelSupport.annotatedTypes(roundEnv, Component.class, ElementKind.CLASS);
+    final Set<TypeElement> components = new LinkedHashSet<>();
+    components.addAll(ModelSupport.annotatedTypes(roundEnv, Component.class, ElementKind.CLASS));
+    components.addAll(ModelSupport.annotatedTypes(roundEnv, RestController.class, ElementKind.CLASS));
     final Set<TypeElement> configs = new LinkedHashSet<>();
     configs.addAll(ModelSupport.annotatedTypes(roundEnv, ConfigurationProperties.class, ElementKind.CLASS));
     configs.addAll(ModelSupport.annotatedTypes(roundEnv, ConfigurationProperties.class, ElementKind.RECORD));

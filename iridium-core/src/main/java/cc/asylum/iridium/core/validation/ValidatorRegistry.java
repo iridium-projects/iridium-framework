@@ -14,6 +14,10 @@ public final class ValidatorRegistry {
     validators.put(type, validator);
   }
 
+  public void clear() {
+    validators.clear();
+  }
+
   @SuppressWarnings("unchecked")
   public <T> Validator<T> get(final Class<T> type) {
     return (Validator<T>) validators.get(type);

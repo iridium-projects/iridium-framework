@@ -14,6 +14,7 @@ dependencies {
   testImplementation(project(":iridium-web-undertow"))
   testImplementation(project(":iridium-data-jimmer"))
   testImplementation(project(":iridium-openapi"))
+  testImplementation(project(":iridium-hot-reloading"))
 
   testImplementation("org.yaml:snakeyaml:2.3")
   testImplementation("com.zaxxer:HikariCP:6.3.3")

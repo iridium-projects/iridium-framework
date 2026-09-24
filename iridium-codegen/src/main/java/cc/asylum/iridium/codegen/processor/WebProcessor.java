@@ -80,28 +80,14 @@ public final class WebProcessor extends IridiumProcessor {
       );
     }
 
-    int controllerIndex = 0;
     for (final TypeElement controller : controllers) {
-      final ClassName type = ClassName.get(controller);
-      final String varName = "controller" + controllerIndex++;
       final String prefix = routes.prefixOf(controller);
-      final ExecutableElement constructor = ModelSupport.resolveConstructor(controller);
-      if (constructor == null) {
-        register.addStatement("final $T $L = new $T()", type, varName, type);
-      } else {
-        register.addStatement("final $T $L = new $T($L)",
-            type,
-            varName,
-            type,
-            ModelSupport.dependencyArgs(constructor, routes.beanLookupPool(), binding)
-        );
-      }
       for (final ExecutableElement method : RouteWriter.handlerMethods(controller)) {
         final var mapping = routes.mappingOf(method);
         if (mapping.isEmpty()) {
           continue;
         }
-        final var handler = routes.routeHandler(varName, method);
+        final var handler = routes.routeHandler(controller, method);
         if (handler.isEmpty()) {
           continue;
         }
