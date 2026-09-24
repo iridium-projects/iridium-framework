@@ -13,6 +13,7 @@ dependencies {
   testImplementation(project(":iridium-log"))
   testImplementation(project(":iridium-web-undertow"))
   testImplementation(project(":iridium-data-jimmer"))
+  testImplementation(project(":iridium-openapi"))
 
   testImplementation("org.yaml:snakeyaml:2.3")
   testImplementation("com.zaxxer:HikariCP:6.3.3")

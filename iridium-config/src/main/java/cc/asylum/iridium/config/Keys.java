@@ -1,6 +1,5 @@
 package cc.asylum.iridium.config;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,8 +10,7 @@ final class Keys {
 
   static String join(
       final String prefix,
-      final String name
-  ) {
+      final String name) {
     if (prefix == null || prefix.isEmpty()) {
       return name;
     }

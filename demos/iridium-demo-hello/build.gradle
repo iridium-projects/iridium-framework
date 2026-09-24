@@ -7,3 +7,7 @@ group = 'cc.asylum.iridium.demo.hello'
 application {
     mainClass = 'cc.asylum.iridium.demo.hello.Application'
 }
+
+dependencies {
+    implementation project(':iridium-openapi')
+}
