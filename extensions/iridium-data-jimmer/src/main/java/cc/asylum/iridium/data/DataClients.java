@@ -4,6 +4,7 @@ import cc.asylum.iridium.data.config.DataSettings;
 import cc.asylum.iridium.data.dialect.Dialects;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.runtime.ConnectionManager;
 import org.babyfish.jimmer.sql.runtime.DatabaseValidationMode;
@@ -14,6 +15,7 @@ import org.babyfish.jimmer.sql.runtime.SqlFormatter;
 import javax.sql.DataSource;
 import java.util.List;
 
+@Slf4j
 public final class DataClients {
 
   private DataClients() {
