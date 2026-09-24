@@ -1,8 +1,10 @@
 package cc.asylum.iridium.json.avaje;
 
+import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.json.Json;
 import io.avaje.jsonb.Jsonb;
 
+@Internal
 public final class AvajeJson implements Json {
 
   private final Jsonb jsonb;
