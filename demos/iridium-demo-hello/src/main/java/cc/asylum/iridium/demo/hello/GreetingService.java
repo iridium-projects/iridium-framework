@@ -10,7 +10,9 @@ public final class GreetingService {
   private final GreetingConfig config;
   private final String suffix;
 
-  public GreetingService(final GreetingConfig config, @Value("${greeting.suffix:!}") final String suffix) {
+  public GreetingService(
+      final GreetingConfig config,
+      final @Value("${greeting.suffix:!}") String suffix) {
     this.config = config;
     this.suffix = suffix;
   }

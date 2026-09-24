@@ -31,5 +31,6 @@ extension("iridium-json-avaje")
 extension("iridium-log")
 extension("iridium-data-jimmer")
 extension("iridium-openapi")
+extension("iridium-hot-reloading")
 
 demo("iridium-demo-hello")

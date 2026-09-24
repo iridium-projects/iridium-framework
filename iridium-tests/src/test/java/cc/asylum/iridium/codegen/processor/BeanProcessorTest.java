@@ -37,11 +37,21 @@ class BeanProcessorTest {
               public void stop() {
               }
             }
+            """,
+        "test.TestController", """
+            package test;
+            import cc.asylum.iridium.web.controller.RestController;
+            @RestController
+            public final class TestController {
+              public TestController(final TestService service) {
+              }
+            }
             """), new BeanProcessor());
 
     assertTrue(result.success(), () -> String.join("\n", result.errors()));
 
     final String registrar = ProcessorHarness.generatedSource(result, "test", "gen", "BeanRegistrarGenerated.java");
+    assertTrue(registrar.contains("pool.put(\"testController\", new TestController(pool.get(TestService.class)))"), registrar);
     assertTrue(registrar.contains("pool.put(\"testService\", new TestService())"), registrar);
     assertTrue(registrar.contains("pool.put(\"service\", new TestFactory().service())"), registrar);
     assertTrue(registrar.contains("ShutdownHook"), registrar);

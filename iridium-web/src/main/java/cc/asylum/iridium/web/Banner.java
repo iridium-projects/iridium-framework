@@ -1,14 +1,12 @@
 package cc.asylum.iridium.web;
 
-import java.util.Locale;
-
-final class Banner {
+public final class Banner {
 
   private static final String RESET = "\u001B[0m";
   private static final String GRAY = "\u001B[38;2;209;213;219m";
   private static final String TEAL = "\u001B[38;2;94;234;212m";
   private static final String WHITE = "\u001B[38;2;248;250;252m";
-  private static final String[] SLOGAN = {"Iridium", "Hardwired Java"};
+  private static final String[] SLOGAN = { "Iridium", "Hardwired Java" };
   private static final int LEFT = 8;
 
   private static final String[] MARK = {
@@ -31,7 +29,7 @@ final class Banner {
   private Banner() {
   }
 
-  static void print() {
+  public static void print() {
     final int markWidth = markWidth();
     final int start = (MARK.length - SLOGAN.length) / 2;
 
@@ -41,11 +39,14 @@ final class Banner {
       final String line = MARK[y];
       System.out.print(paint(line, y));
       System.out.print(" ".repeat(markWidth - line.length() + 3));
+
       final int index = y - start;
       if (index >= 0 && index < SLOGAN.length) {
         System.out.print(slogan(SLOGAN[index], index == 0));
       }
+
       System.out.println();
+
     }
     System.out.println();
   }
@@ -55,10 +56,12 @@ final class Banner {
 
     for (int x = LEFT; x < line.length(); x++) {
       final char glyph = line.charAt(x);
+
       if (glyph == ' ') {
         out.append(' ');
         continue;
       }
+
       out.append(foreground(x, y)).append(glyph).append(RESET);
     }
 

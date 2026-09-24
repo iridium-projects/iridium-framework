@@ -23,6 +23,10 @@ public final class BeanPool {
     beans.put(name, bean);
   }
 
+  public void clear() {
+    beans.clear();
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T get(final String name) {
     return (T) beans.get(name);
@@ -55,6 +59,7 @@ public final class BeanPool {
 
   public static Result<Unit, Exception> initialize() {
     return Result.of(() -> {
+      INSTANCE.clear();
       for (final BeanRegistrar registrar : ServiceLoader.load(BeanRegistrar.class)) {
         registrar.register(INSTANCE);
       }

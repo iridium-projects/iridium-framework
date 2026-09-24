@@ -41,4 +41,11 @@ class ValidationTest {
     registry.register(String.class, validator);
     assertSame(validator, registry.get(String.class));
   }
+
+  @Test
+  void resetDropsRegisteredValidators() {
+    Validation.initialize();
+    Validation.reset();
+    assertSame("plain", Validation.validate("plain").unwrap());
+  }
 }

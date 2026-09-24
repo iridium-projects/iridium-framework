@@ -1,5 +1,6 @@
 package cc.asylum.iridium.core.bean;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,6 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BeanPoolTest {
+
+  @AfterEach
+  void clearPool() {
+    BeanPool.instance().clear();
+  }
 
   @Test
   void storesAndLooksUpByNameAndType() {
@@ -39,6 +45,16 @@ class BeanPoolTest {
     assertSame(second, pool.get("beta"));
     assertThrows(IllegalStateException.class, () -> pool.get(Beta.class));
     assertEquals(2, pool.all(Beta.class).size());
+  }
+
+  @Test
+  void clearDropsStoredBeans() {
+    final BeanPool pool = BeanPool.instance();
+    pool.put("alpha", new Alpha());
+    pool.clear();
+
+    assertNull(pool.get("alpha"));
+    assertNull(pool.get(Alpha.class));
   }
 
   @Test
