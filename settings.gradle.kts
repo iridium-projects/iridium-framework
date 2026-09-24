@@ -28,5 +28,6 @@ fun demo(name: String) {
 extension("iridium-web-undertow")
 extension("iridium-json-avaje")
 extension("iridium-log")
+extension("iridium-data-jimmer")
 
 demo("iridium-demo-hello")
