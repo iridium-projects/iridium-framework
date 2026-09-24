@@ -41,7 +41,7 @@ public final class Router {
             }
             return invoke(request.withPathVariables(variables), route.handler);
         }
-        return Response.notFound().body("No route for " + request.method() + " " + request.path());
+        return Response.notFound().build();
     }
 
     private Response<?> invoke(final Request request, final Handler terminal) throws Exception {
