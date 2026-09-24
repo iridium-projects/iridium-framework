@@ -1,12 +1,14 @@
 package cc.asylum.iridium.data.config;
 
 import cc.asylum.iridium.core.bean.Bean;
+import cc.asylum.iridium.core.component.Component;
 import cc.asylum.iridium.core.hook.ShutdownHook;
 import cc.asylum.iridium.data.DataClients;
 import org.babyfish.jimmer.sql.JSqlClient;
 
 import javax.sql.DataSource;
 
+@Component
 public final class DataBeans {
 
   @Bean

@@ -6,8 +6,6 @@ plugins {
 dependencies {
   testImplementation(project(":iridium-core"))
   testImplementation(project(":iridium-web"))
-  testImplementation(project(":iridium-json"))
-  testImplementation(project(":iridium-json-avaje"))
   testImplementation(project(":iridium-config"))
   testImplementation(project(":iridium-codegen"))
   testImplementation(project(":iridium-log"))

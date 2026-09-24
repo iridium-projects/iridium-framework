@@ -16,6 +16,8 @@ import cc.asylum.iridium.codegen.support.ModelSupport;
 import cc.asylum.iridium.codegen.support.TypeSupport;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.bean.BeanPool;
+import cc.asylum.iridium.core.validation.Valid;
+import cc.asylum.iridium.core.validation.Validation;
 import cc.asylum.iridium.web.controller.Parameters;
 import cc.asylum.iridium.web.controller.RestController;
 import cc.asylum.iridium.web.controller.mapping.HttpMapping;
@@ -49,6 +51,7 @@ public final class RouteWriter {
   private static final ClassName REQUEST_CLASS = ClassName.get(Request.class);
   private static final ClassName HANDLER = ClassName.get(Handler.class);
   private static final ClassName BEAN_POOL = ClassName.get(BeanPool.class);
+  private static final ClassName VALIDATION = ClassName.get(Validation.class);
 
   private final Types types;
   private final Elements elements;
@@ -137,6 +140,9 @@ public final class RouteWriter {
         return Optional.empty();
       }
       arguments.add(argument.get());
+      if (parameter.getAnnotation(Valid.class) != null) {
+        emitValidation(handle, argument.get());
+      }
     }
 
     handle.addStatement(
@@ -179,11 +185,6 @@ public final class RouteWriter {
         ? RequestBinding.Source.BODY
         : binding.value();
 
-    if (source == RequestBinding.Source.ATTRIBUTE) {
-      Diagnostics.error(messager, parameter, "@RequestAttribute is not supported yet");
-      return Optional.empty();
-    }
-
     final Optional<TypeMirror> optionalValue = TypeSupport.optionalValueType(types, type);
     final boolean optional = optionalValue.isPresent();
     final boolean required = optional
@@ -217,7 +218,9 @@ public final class RouteWriter {
           RESPONSE,
           "Missing required " + label(source) + " '" + bindingName + "'"
       );
-      handle.addStatement("$L $L = $L", typeName, name, convertExpression(type, rawVar));
+      if (!emitConversion(handle, type, name, rawVar, typeName, bindingName)) {
+        return Optional.empty();
+      }
       return Optional.of(name);
     }
 
@@ -248,7 +251,9 @@ public final class RouteWriter {
           RESPONSE,
           "Missing required request body"
       );
-      handle.addStatement("$L $L = $L", type.toString(), name, convertExpression(type, rawVar));
+      if (!emitConversion(handle, type, name, rawVar, type.toString(), "request body")) {
+        return null;
+      }
       return name;
     }
 
@@ -274,6 +279,31 @@ public final class RouteWriter {
       case BODY -> PARAMETERS + ".body(_request)";
       default -> PARAMETERS + ".query(_request, \"" + name + "\", " + value + ")";
     };
+  }
+
+  private void emitValidation(final MethodSpec.Builder handle, final String name) {
+    final String checked = name + "Checked";
+    handle.addStatement("var $L = $T.validate($L)", checked, VALIDATION, name);
+    handle.addCode("if ($L.isErr()) {\n$>", checked);
+    handle.addStatement("return $T.badRequest().body($L.unwrapErr())", RESPONSE, checked);
+    handle.addCode("$<}\n");
+  }
+
+  private boolean emitConversion(
+      final MethodSpec.Builder handle,
+      final TypeMirror type,
+      final String name,
+      final String rawVar,
+      final String typeName,
+      final String label
+  ) {
+    handle.addStatement("$L $L", typeName, name);
+    handle.addCode("try {\n$>");
+    handle.addStatement("$L = $L", name, convertExpression(type, rawVar));
+    handle.addCode("$<} catch (RuntimeException _invalid) {\n$>");
+    handle.addStatement("return $T.badRequest().body($S)", RESPONSE, "Invalid " + label);
+    handle.addCode("$<}\n");
+    return true;
   }
 
   String convertExpression(
@@ -303,8 +333,7 @@ public final class RouteWriter {
       case "java.lang.Character" -> raw + ".charAt(0)";
       case "java.lang.Float" -> "Float.valueOf(" + raw + ")";
       case "java.lang.Double" -> "Double.valueOf(" + raw + ")";
-      default -> ModelSupport.rootPackage() + ".json.Json.load()"
-          + ".deserialize(" + raw + ", " + types.erasure(type) + ".class)";
+      default -> "io.avaje.jsonb.Jsonb.instance().type(" + types.erasure(type) + ".class).fromJson(" + raw + ")";
     };
   }
 

@@ -46,7 +46,7 @@ class ProcessorEdgeTest {
   }
 
   @Test
-  void skipsUnmappedMethodsAndRejectsRequestAttributes() throws Exception {
+  void skipsUnmappedMethods() throws Exception {
     final var skipped = ProcessorHarness.compile(Map.of(
         "test.Partial", """
             package test;
@@ -64,24 +64,6 @@ class ProcessorEdgeTest {
     final String registrar = ProcessorHarness.generatedSource(skipped, "test", "gen", "WebRegistrarGenerated.java");
     assertTrue(registrar.contains("\"/ok\""));
     assertFalse(registrar.contains("ignored"));
-
-    final var attributes = ProcessorHarness.compile(Map.of(
-        "test.Attrs", """
-            package test;
-            import cc.asylum.iridium.web.controller.RestController;
-            import cc.asylum.iridium.web.controller.mapping.GET;
-            import cc.asylum.iridium.web.controller.parameter.RequestAttribute;
-            import cc.asylum.iridium.web.response.Response;
-            @RestController
-            public final class Attrs {
-              @GET("/attr")
-              public Response<String> attr(@RequestAttribute("user") String user) {
-                return Response.ok(user);
-              }
-            }
-            """), new WebProcessor());
-    assertFalse(attributes.success());
-    assertTrue(attributes.errors().stream().anyMatch(error -> error.contains("@RequestAttribute is not supported yet")));
   }
 
   @Test

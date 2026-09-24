@@ -1,11 +1,11 @@
 package cc.asylum.iridium.codegen.writer;
 
 import com.io7m.jodist.ClassName;
-import com.io7m.jodist.CodeBlock;
 import com.io7m.jodist.MethodSpec;
 import com.io7m.jodist.TypeName;
 import com.io7m.jodist.TypeSpec;
 import cc.asylum.iridium.core.annotation.Internal;
+import cc.asylum.iridium.core.bean.BeanPool;
 import cc.asylum.iridium.core.hook.ShutdownHook;
 
 import javax.lang.model.element.Modifier;
@@ -19,15 +19,15 @@ public final class HookWriter {
   public static TypeSpec shutdownHook(
       final ClassName enclosingType,
       final String methodName,
-      final int priority,
-      final CodeBlock constructorArgs
+      final int priority
   ) {
     return TypeSpec.anonymousClassBuilder("")
         .addSuperinterface(ClassName.get(ShutdownHook.class))
         .addMethod(MethodSpec.methodBuilder("run")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
-            .addStatement("new $T($L).$N()", enclosingType, constructorArgs, methodName)
+            .addStatement("$T.instance().<$T>get($T.class).$N()",
+                BeanPool.class, enclosingType, enclosingType, methodName)
             .build())
         .addMethod(MethodSpec.methodBuilder("priority")
             .addAnnotation(Override.class)

@@ -53,11 +53,11 @@ public final class HelloController {
 - Annotation-based HTTP routing (`@RestController`, `@GET`, `@POST`, …)
 - Request binding (`@PathVariable`, `@RequestParam`, `@RequestBody`, …)
 - Bean Validation–style constraints, generated
-- Pluggable HTTP server and JSON implementation
+- Pluggable HTTP server
 - Gradle plugin that wires processors, the default stack, and a fat JAR
 - Hot Reloading
 
-Default stack: Undertow + Avaje Jsonb. Swap in another server or JSON library by depending on a different extension.
+Default stack: Undertow + Avaje Jsonb. Swap in another server by depending on a different extension.
 
 ## Hot Reloading
 

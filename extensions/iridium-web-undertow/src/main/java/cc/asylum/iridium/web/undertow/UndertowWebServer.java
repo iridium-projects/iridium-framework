@@ -11,6 +11,7 @@ import cc.asylum.iridium.web.response.Response;
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.server.RequestTooBigException;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 public final class UndertowWebServer implements WebServer {
 
   private static final Logger LOG = LoggerFactory.getLogger(UndertowWebServer.class);
+  private static final long MAX_ENTITY_SIZE = 1_048_576L;
 
   private final ResponseWriter responseWriter = new ResponseWriter();
   private Undertow undertow;
@@ -46,7 +48,7 @@ public final class UndertowWebServer implements WebServer {
 
       undertow = Undertow.builder()
           .addHttpListener(port, host)
-          .setServerOption(UndertowOptions.MAX_ENTITY_SIZE, 10_000_000L)
+          // .setServerOption(UndertowOptions.MAX_ENTITY_SIZE, MAX_ENTITY_SIZE)
           .setHandler(this::handle)
           .build();
 
@@ -93,6 +95,8 @@ public final class UndertowWebServer implements WebServer {
           request.path(),
           response.status(),
           elapsedMillis(start));
+    } catch (final RequestTooBigException tooLarge) {
+      sendStatus(exchange, 413, "Payload Too Large");
     } catch (final Exception e) {
       LOG.error("Unhandled exception while processing {} {}", exchange.getRequestMethod(), exchange.getRequestURI(), e);
       sendError(exchange);
@@ -111,6 +115,7 @@ public final class UndertowWebServer implements WebServer {
     final Map<String, List<String>> query = new LinkedHashMap<>();
     exchange.getQueryParameters().forEach((name, values) -> query.put(name, new ArrayList<>(values)));
 
+    exchange.setMaxEntitySize(MAX_ENTITY_SIZE);
     exchange.startBlocking();
     final byte[] body = exchange.getInputStream().readAllBytes();
 
@@ -134,9 +139,13 @@ public final class UndertowWebServer implements WebServer {
   }
 
   private void sendError(final HttpServerExchange exchange) {
+    sendStatus(exchange, 500, "Internal Server Error");
+  }
+
+  private void sendStatus(final HttpServerExchange exchange, final int status, final String message) {
     try {
-      exchange.setStatusCode(500);
-      sendBody(exchange, "Internal Server Error".getBytes(StandardCharsets.UTF_8));
+      exchange.setStatusCode(status);
+      sendBody(exchange, message.getBytes(StandardCharsets.UTF_8));
     } catch (final Exception nested) {
       LOG.error("Failed to send error response", nested);
     }
