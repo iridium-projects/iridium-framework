@@ -55,8 +55,26 @@ public final class HelloController {
 - Bean Validation–style constraints, generated
 - Pluggable HTTP server and JSON implementation
 - Gradle plugin that wires processors, the default stack, and a fat JAR
+- Hot Reloading
 
 Default stack: Undertow + Avaje Jsonb. Swap in another server or JSON library by depending on a different extension.
+
+## Hot Reloading
+
+```gradle
+
+dependencies {
+    ...
+    runtimeOnly project(':iridium-hot-reloading')
+}
+
+tasks.named('run') {
+    def agent = project(':iridium-hot-reloading').tasks.named('jar')
+    dependsOn agent
+    jvmArgs "-javaagent:${agent.get().archiveFile.get().asFile.absolutePath}"
+}
+
+```
 
 ## Requirements
 

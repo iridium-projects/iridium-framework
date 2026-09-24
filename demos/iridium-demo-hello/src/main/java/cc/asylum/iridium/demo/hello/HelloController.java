@@ -19,7 +19,7 @@ public final class HelloController {
 
   @GET("/hello")
   public Response<String> hello(final @RequestParam(defaultValue = "world") String name) {
-    return Response.ok(service.greet(name));
+    return Response.ok("neow");
   }
 
   @GET("/hello/{name}")
