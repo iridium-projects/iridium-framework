@@ -53,8 +53,11 @@ public final class WebProcessor extends IridiumProcessor {
     generate(roundEnv, controllers, middlewares);
   }
 
-  private void generate(final RoundEnvironment roundEnv, final Set<TypeElement> controllers,
-      final Set<TypeElement> middlewares) {
+  private void generate(
+      final RoundEnvironment roundEnv,
+      final Set<TypeElement> controllers,
+      final Set<TypeElement> middlewares
+  ) {
     final List<TypeElement> roots = ModelSupport.rootTypes(roundEnv, ElementKind.CLASS, ElementKind.RECORD);
     final String pkg = ModelSupport.generatedPackage(elements, roots);
     final var routes = new RouteWriter(types, elements, messager);
@@ -67,19 +70,25 @@ public final class WebProcessor extends IridiumProcessor {
     for (final TypeElement middleware : middlewares) {
       register.addStatement("router.use(new $T($L))",
           ClassName.get(middleware),
-          ModelSupport.dependencyArgs(ModelSupport.resolveConstructor(middleware), routes.beanLookupPool()));
+          ModelSupport.dependencyArgs(ModelSupport.resolveConstructor(middleware), routes.beanLookupPool())
+      );
     }
 
     int controllerIndex = 0;
     for (final TypeElement controller : controllers) {
       final ClassName type = ClassName.get(controller);
       final String varName = "controller" + controllerIndex++;
+      final String prefix = routes.prefixOf(controller);
       final ExecutableElement constructor = ModelSupport.resolveConstructor(controller);
       if (constructor == null) {
         register.addStatement("final $T $L = new $T()", type, varName, type);
       } else {
         register.addStatement("final $T $L = new $T($L)",
-            type, varName, type, ModelSupport.dependencyArgs(constructor, routes.beanLookupPool()));
+            type,
+            varName,
+            type,
+            ModelSupport.dependencyArgs(constructor, routes.beanLookupPool())
+        );
       }
       for (final ExecutableElement method : RouteWriter.handlerMethods(controller)) {
         final var mapping = routes.mappingOf(method);
@@ -91,7 +100,7 @@ public final class WebProcessor extends IridiumProcessor {
           continue;
         }
         register.addStatement("router.register($S, $S, $L)",
-            mapping.get().httpMethod(), mapping.get().path(), handler.get());
+            mapping.get().httpMethod(), RouteWriter.resolvePath(prefix, mapping.get().path()), handler.get());
       }
     }
 

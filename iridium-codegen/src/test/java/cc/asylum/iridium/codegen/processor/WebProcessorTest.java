@@ -44,4 +44,33 @@ class WebProcessorTest {
     assertTrue(registrar.contains("Integer.parseInt("), registrar);
     assertTrue(registrar.contains("Optional.ofNullable("), registrar);
   }
+
+  @Test
+  void prependsControllerPrefixToMethodPaths() throws Exception {
+    final var result = ProcessorHarness.compile(Map.of(
+        "test.PrefixedFixture", """
+            package test;
+            import cc.asylum.iridium.web.controller.RestController;
+            import cc.asylum.iridium.web.controller.mapping.GET;
+            import cc.asylum.iridium.web.response.Response;
+            @RestController("/api/")
+            public final class PrefixedFixture {
+              @GET("/hello")
+              public Response<String> hello() {
+                return Response.ok("hi");
+              }
+              @GET
+              public Response<String> root() {
+                return Response.ok("root");
+              }
+            }
+            """), new WebProcessor());
+
+    assertTrue(result.success(), () -> String.join("\n", result.errors()));
+
+    final String registrar =
+        ProcessorHarness.generatedSource(result, "test", "gen", "WebRegistrarGenerated.java");
+    assertTrue(registrar.contains("router.register(\"GET\", \"/api/hello\""), registrar);
+    assertTrue(registrar.contains("router.register(\"GET\", \"/api\""), registrar);
+  }
 }
