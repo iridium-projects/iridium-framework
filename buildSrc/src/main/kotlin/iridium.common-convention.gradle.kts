@@ -16,7 +16,10 @@ repositories {
 }
 
 dependencies() {
-    implementation("org.projectlombok:lombok:1.18.48")
+    compileOnly("org.projectlombok:lombok:1.18.48")
+    annotationProcessor("org.projectlombok:lombok:1.18.48")
+    testCompileOnly("org.projectlombok:lombok:1.18.48")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
 }
 
 tasks.withType<JavaCompile> {
