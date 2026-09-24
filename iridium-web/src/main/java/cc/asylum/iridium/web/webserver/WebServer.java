@@ -26,8 +26,10 @@ public interface WebServer {
     if (beans.isErr()) {
       return beans;
     }
+
     Validation.reset();
     Validation.initialize();
+
     return load().registerRoutes();
   }
 
