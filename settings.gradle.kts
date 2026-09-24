@@ -13,7 +13,6 @@ include("iridium-core")
 include("iridium-web")
 include("iridium-json")
 include("iridium-codegen")
-include("iridium-test")
 
 fun extension(name: String) {
     include(name)
@@ -22,3 +21,4 @@ fun extension(name: String) {
 
 extension("iridium-web-undertow")
 extension("iridium-json-avaje")
+extension("iridium-log")
