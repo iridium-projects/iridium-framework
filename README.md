@@ -64,7 +64,6 @@ Default stack: Undertow + Avaje Jsonb. Swap in another server or JSON library by
 ```gradle
 
 dependencies {
-    ...
     runtimeOnly project(':iridium-hot-reloading')
 }
 
