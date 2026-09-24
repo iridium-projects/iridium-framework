@@ -2,6 +2,8 @@ package cc.asylum.iridium.codegen.support;
 
 import com.io7m.jodist.CodeBlock;
 import com.io7m.jodist.TypeName;
+import cc.asylum.iridium.codegen.writer.ConfigBinding;
+import cc.asylum.iridium.config.Value;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.inject.Inject;
 
@@ -33,11 +35,17 @@ public final class ModelSupport {
     return index < 0 ? pkg : pkg.substring(0, index);
   }
 
-  public static String packageOf(final Elements elements, final Element element) {
+  public static String packageOf(
+      final Elements elements,
+      final Element element
+  ) {
     return elements.getPackageOf(element).getQualifiedName().toString();
   }
 
-  public static String generatedPackage(final Elements elements, final Collection<? extends Element> origins) {
+  public static String generatedPackage(
+      final Elements elements,
+      final Collection<? extends Element> origins
+  ) {
     final Set<String> packages = new LinkedHashSet<>();
     for (final Element origin : origins) {
       packages.add(packageOf(elements, origin));
@@ -54,7 +62,10 @@ public final class ModelSupport {
     return prefix == null ? "" : prefix;
   }
 
-  public static String commonPrefix(final String a, final String b) {
+  public static String commonPrefix(
+      final String a,
+      final String b
+  ) {
     final String[] left = a.split("\\.");
     final String[] right = b.split("\\.");
     final int length = Math.min(left.length, right.length);
@@ -72,7 +83,10 @@ public final class ModelSupport {
     return Character.toLowerCase(name.charAt(0)) + name.substring(1);
   }
 
-  public static List<TypeElement> rootTypes(final RoundEnvironment roundEnv, final ElementKind... kinds) {
+  public static List<TypeElement> rootTypes(
+      final RoundEnvironment roundEnv,
+      final ElementKind... kinds
+  ) {
     final Set<ElementKind> allowed = Set.of(kinds);
     final List<TypeElement> result = new ArrayList<>();
     for (final Element root : roundEnv.getRootElements()) {
@@ -84,7 +98,10 @@ public final class ModelSupport {
   }
 
   public static <A extends Annotation> Set<TypeElement> annotatedTypes(
-      final RoundEnvironment roundEnv, final Class<A> annotation, final ElementKind kind) {
+      final RoundEnvironment roundEnv,
+      final Class<A> annotation,
+      final ElementKind kind
+  ) {
     return roundEnv.getElementsAnnotatedWith(annotation).stream()
         .filter(element -> element.getKind() == kind)
         .map(TypeElement.class::cast)
@@ -92,7 +109,9 @@ public final class ModelSupport {
   }
 
   public static <A extends Annotation> Set<ExecutableElement> annotatedMethods(
-      final RoundEnvironment roundEnv, final Class<A> annotation) {
+      final RoundEnvironment roundEnv,
+      final Class<A> annotation
+  ) {
     return roundEnv.getElementsAnnotatedWith(annotation).stream()
         .filter(element -> element.getKind() == ElementKind.METHOD)
         .map(ExecutableElement.class::cast)
@@ -117,11 +136,18 @@ public final class ModelSupport {
     return constructors.size() == 1 ? constructors.get(0) : null;
   }
 
-  public static CodeBlock dependencyArgs(final ExecutableElement executable) {
-    return dependencyArgs(executable, CodeBlock.of("pool"));
+  public static CodeBlock dependencyArgs(
+      final ExecutableElement executable,
+      final BindingContext binding
+  ) {
+    return dependencyArgs(executable, CodeBlock.of("pool"), binding);
   }
 
-  public static CodeBlock dependencyArgs(final ExecutableElement executable, final CodeBlock pool) {
+  public static CodeBlock dependencyArgs(
+      final ExecutableElement executable,
+      final CodeBlock pool,
+      final BindingContext binding
+  ) {
     final CodeBlock.Builder args = CodeBlock.builder();
     boolean first = true;
     if (executable != null) {
@@ -130,7 +156,12 @@ public final class ModelSupport {
           args.add(", ");
         }
         first = false;
-        args.add("$L.get($T.class)", pool, TypeName.get(parameter.asType()));
+        if (parameter.getAnnotation(Value.class) != null) {
+          final CodeBlock bound = ConfigBinding.bindValue(binding, parameter);
+          args.add(bound == null ? CodeBlock.of("null") : bound);
+        } else {
+          args.add("$L.get($T.class)", pool, TypeName.get(parameter.asType()));
+        }
       }
     }
     return args.build();

@@ -1,6 +1,8 @@
 package cc.asylum.iridium.core.bean;
 
 import cc.asylum.iridium.core.annotation.Internal;
+import cc.asylum.iridium.core.result.Result;
+import cc.asylum.iridium.core.result.Unit;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,10 +50,14 @@ public final class BeanPool {
         .collect(Collectors.toUnmodifiableList());
   }
 
-  public static void initialize() {
-    for (final BeanRegistrar registrar : ServiceLoader.load(BeanRegistrar.class)) {
-      registrar.register(INSTANCE);
-    }
+  public static Result<Unit, Exception> initialize() {
+    return Result.of(() -> {
+      for (final BeanRegistrar registrar : ServiceLoader.load(BeanRegistrar.class)) {
+        registrar.register(INSTANCE);
+      }
+
+      return Unit.INSTANCE;
+    });
   }
 
   public static BeanPool instance() {

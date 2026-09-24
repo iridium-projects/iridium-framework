@@ -49,6 +49,7 @@ public final class HelloController {
 ## Features
 
 - Compile-time dependency injection (`@Component`)
+- Configuration binding (`@ConfigurationProperties`, `@Value`) from `application.yml` and `application.properties`
 - Annotation-based HTTP routing (`@RestController`, `@GET`, `@POST`, …)
 - Request binding (`@PathVariable`, `@RequestParam`, `@RequestBody`, …)
 - Bean Validation–style constraints, generated

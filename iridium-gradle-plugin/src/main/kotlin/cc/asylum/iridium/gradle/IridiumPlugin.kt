@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.application.CreateStartScripts
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 class IridiumPlugin : Plugin<Project> {
@@ -20,6 +21,9 @@ class IridiumPlugin : Plugin<Project> {
     }
 
     project.repositories.mavenCentral()
+    project.tasks.withType(JavaCompile::class.java).configureEach {
+      options.compilerArgs.add("-parameters")
+    }
     addDependencies(project)
 
     project.tasks.named("jar").configure {

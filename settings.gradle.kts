@@ -13,12 +13,20 @@ include("iridium-core")
 include("iridium-web")
 include("iridium-json")
 include("iridium-codegen")
+include("iridium-config")
 
 fun extension(name: String) {
     include(name)
     project(":$name").projectDir = file("extensions/$name")
 }
 
+fun demo(name: String) {
+    include(name)
+    project(":$name").projectDir = file("demos/$name")
+}
+
 extension("iridium-web-undertow")
 extension("iridium-json-avaje")
 extension("iridium-log")
+
+demo("iridium-demo-hello")

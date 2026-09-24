@@ -40,7 +40,7 @@ public final class ProcessorHarness {
       for (final Map.Entry<String, String> source : sources.entrySet()) {
         units.add(new StringSource(source.getKey(), source.getValue()));
       }
-      final List<String> options = List.of("-d", classes.toString(), "-s", generated.toString());
+      final List<String> options = List.of("-d", classes.toString(), "-s", generated.toString(), "-parameters");
       final JavaCompiler.CompilationTask task = compiler.getTask(null, files, diagnostics, options, null, units);
       task.setProcessors(Arrays.asList(processors));
       final boolean success = task.call();

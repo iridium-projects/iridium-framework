@@ -3,6 +3,7 @@ package cc.asylum.iridium.codegen.processor;
 import com.io7m.jodist.ClassName;
 import com.io7m.jodist.MethodSpec;
 import cc.asylum.iridium.codegen.IridiumProcessor;
+import cc.asylum.iridium.codegen.support.BindingContext;
 import cc.asylum.iridium.codegen.support.ModelSupport;
 import cc.asylum.iridium.codegen.support.SourceWriter;
 import cc.asylum.iridium.codegen.support.TypeSupport;
@@ -61,6 +62,7 @@ public final class WebProcessor extends IridiumProcessor {
     final List<TypeElement> roots = ModelSupport.rootTypes(roundEnv, ElementKind.CLASS, ElementKind.RECORD);
     final String pkg = ModelSupport.generatedPackage(elements, roots);
     final var routes = new RouteWriter(types, elements, messager);
+    final var binding = new BindingContext(types, elements, messager);
 
     final MethodSpec.Builder register = MethodSpec.methodBuilder("register")
         .addAnnotation(Override.class)
@@ -70,7 +72,11 @@ public final class WebProcessor extends IridiumProcessor {
     for (final TypeElement middleware : middlewares) {
       register.addStatement("router.use(new $T($L))",
           ClassName.get(middleware),
-          ModelSupport.dependencyArgs(ModelSupport.resolveConstructor(middleware), routes.beanLookupPool())
+          ModelSupport.dependencyArgs(
+              ModelSupport.resolveConstructor(middleware),
+              routes.beanLookupPool(),
+              binding
+          )
       );
     }
 
@@ -87,7 +93,7 @@ public final class WebProcessor extends IridiumProcessor {
             type,
             varName,
             type,
-            ModelSupport.dependencyArgs(constructor, routes.beanLookupPool())
+            ModelSupport.dependencyArgs(constructor, routes.beanLookupPool(), binding)
         );
       }
       for (final ExecutableElement method : RouteWriter.handlerMethods(controller)) {

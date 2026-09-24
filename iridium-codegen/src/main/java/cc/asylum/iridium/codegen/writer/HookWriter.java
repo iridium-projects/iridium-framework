@@ -1,6 +1,7 @@
 package cc.asylum.iridium.codegen.writer;
 
 import com.io7m.jodist.ClassName;
+import com.io7m.jodist.CodeBlock;
 import com.io7m.jodist.MethodSpec;
 import com.io7m.jodist.TypeName;
 import com.io7m.jodist.TypeSpec;
@@ -15,13 +16,18 @@ public final class HookWriter {
   private HookWriter() {
   }
 
-  public static TypeSpec shutdownHook(final ClassName enclosingType, final String methodName, final int priority) {
+  public static TypeSpec shutdownHook(
+      final ClassName enclosingType,
+      final String methodName,
+      final int priority,
+      final CodeBlock constructorArgs
+  ) {
     return TypeSpec.anonymousClassBuilder("")
         .addSuperinterface(ClassName.get(ShutdownHook.class))
         .addMethod(MethodSpec.methodBuilder("run")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
-            .addStatement("new $T().$N()", enclosingType, methodName)
+            .addStatement("new $T($L).$N()", enclosingType, constructorArgs, methodName)
             .build())
         .addMethod(MethodSpec.methodBuilder("priority")
             .addAnnotation(Override.class)
