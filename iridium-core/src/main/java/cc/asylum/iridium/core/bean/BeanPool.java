@@ -37,10 +37,12 @@ public final class BeanPool {
     if (matches.isEmpty()) {
       return null;
     }
+
     if (matches.size() > 1) {
       throw new IllegalStateException("Expected a single bean of type '"
           + type.getName() + "' but found " + matches.size() + " beans");
     }
+
     return matches.get(0);
   }
 
