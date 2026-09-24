@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -68,6 +69,10 @@ public final class UndertowWebServer implements WebServer {
   }
 
   private void handle(final HttpServerExchange exchange) {
+    if (exchange.isInIoThread()) {
+      exchange.dispatch(this::handle);
+      return;
+    }
     final long start = System.nanoTime();
     try {
       final Request request = toRequest(exchange);
@@ -78,8 +83,7 @@ public final class UndertowWebServer implements WebServer {
     } catch (final Exception e) {
       LOG.error("Unhandled exception while processing {} {}",
           exchange.getRequestMethod(), exchange.getRequestURI(), e);
-      exchange.setStatusCode(500);
-      exchange.getResponseSender().send("Internal Server Error");
+      sendError(exchange);
     }
   }
 
@@ -107,12 +111,29 @@ public final class UndertowWebServer implements WebServer {
         body);
   }
 
-  private void write(final HttpServerExchange exchange, final Response<?> response) {
+  private void write(final HttpServerExchange exchange, final Response<?> response) throws Exception {
     exchange.setStatusCode(response.status());
     response.headers().forEach((name, value) -> exchange.getResponseHeaders().put(new HttpString(name), value));
 
     exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, responseWriter.contentType(response));
-    exchange.getResponseSender().send(ByteBuffer.wrap(responseWriter.writeBody(response)));
+    sendBody(exchange, responseWriter.writeBody(response));
+  }
+
+  private void sendError(final HttpServerExchange exchange) {
+    try {
+      exchange.setStatusCode(500);
+      sendBody(exchange, "Internal Server Error".getBytes(StandardCharsets.UTF_8));
+    } catch (final Exception nested) {
+      LOG.error("Failed to send error response", nested);
+    }
+  }
+
+  private void sendBody(final HttpServerExchange exchange, final byte[] body) throws Exception {
+    if (exchange.isBlocking()) {
+      exchange.getOutputStream().write(body);
+      return;
+    }
+    exchange.getResponseSender().send(ByteBuffer.wrap(body));
   }
 
   private static long elapsedMillis(final long startNanos) {
