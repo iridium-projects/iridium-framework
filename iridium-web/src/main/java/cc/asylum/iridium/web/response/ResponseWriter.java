@@ -1,7 +1,6 @@
-package cc.asylum.iridium.web.undertow;
+package cc.asylum.iridium.web.response;
 
 import cc.asylum.iridium.json.Json;
-import cc.asylum.iridium.web.response.Response;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;

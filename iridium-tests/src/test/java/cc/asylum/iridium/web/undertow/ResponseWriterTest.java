@@ -1,6 +1,7 @@
 package cc.asylum.iridium.web.undertow;
 
 import cc.asylum.iridium.web.response.Response;
+import cc.asylum.iridium.web.response.ResponseWriter;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;

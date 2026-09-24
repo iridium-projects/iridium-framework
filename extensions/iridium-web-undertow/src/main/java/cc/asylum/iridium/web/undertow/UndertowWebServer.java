@@ -3,6 +3,7 @@ package cc.asylum.iridium.web.undertow;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.result.Unit;
+import cc.asylum.iridium.web.response.ResponseWriter;
 import cc.asylum.iridium.web.router.Request;
 import cc.asylum.iridium.web.router.Router;
 import cc.asylum.iridium.web.webserver.WebServer;

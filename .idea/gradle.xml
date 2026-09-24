@@ -37,6 +37,7 @@
             <option value="$PROJECT_DIR$/iridium-core" />
             <option value="$PROJECT_DIR$/iridium-gradle-plugin" />
             <option value="$PROJECT_DIR$/iridium-json" />
+            <option value="$PROJECT_DIR$/iridium-tests" />
             <option value="$PROJECT_DIR$/iridium-web" />
           </set>
         </option>

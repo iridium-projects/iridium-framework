@@ -9,4 +9,5 @@ repositories {
 
 dependencies() {
     api(project(":iridium-core"))
+    api(project(":iridium-json"))
 }
