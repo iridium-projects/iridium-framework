@@ -9,6 +9,7 @@ import cc.asylum.iridium.web.router.Router;
 import cc.asylum.iridium.web.webserver.WebServer;
 import cc.asylum.iridium.web.response.Response;
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
@@ -45,6 +46,7 @@ public final class UndertowWebServer implements WebServer {
 
       undertow = Undertow.builder()
           .addHttpListener(port, host)
+          .setServerOption(UndertowOptions.MAX_ENTITY_SIZE, 10_000_000L)
           .setHandler(this::handle)
           .build();
 
@@ -87,11 +89,10 @@ public final class UndertowWebServer implements WebServer {
       write(exchange, response);
 
       LOG.debug("{} {} -> {} ({} ms)",
-        request.method(),
-        request.path(),
-        response.status(),
-        elapsedMillis(start)
-      );
+          request.method(),
+          request.path(),
+          response.status(),
+          elapsedMillis(start));
     } catch (final Exception e) {
       LOG.error("Unhandled exception while processing {} {}", exchange.getRequestMethod(), exchange.getRequestURI(), e);
       sendError(exchange);
@@ -123,9 +124,8 @@ public final class UndertowWebServer implements WebServer {
   }
 
   private void write(
-    final HttpServerExchange exchange,
-    final Response<?> response
-  ) throws Exception {
+      final HttpServerExchange exchange,
+      final Response<?> response) throws Exception {
     exchange.setStatusCode(response.status());
     response.headers().forEach((name, value) -> exchange.getResponseHeaders().put(new HttpString(name), value));
 
@@ -143,9 +143,8 @@ public final class UndertowWebServer implements WebServer {
   }
 
   private void sendBody(
-    final HttpServerExchange exchange,
-    final byte[] body
-  ) throws Exception {
+      final HttpServerExchange exchange,
+      final byte[] body) throws Exception {
     if (exchange.isBlocking()) {
       exchange.getOutputStream().write(body);
       return;
