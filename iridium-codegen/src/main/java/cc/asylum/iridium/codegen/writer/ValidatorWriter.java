@@ -62,16 +62,28 @@ public final class ValidatorWriter {
   private final Elements elements;
   private final Messager messager;
 
-  public ValidatorWriter(final Types types, final Elements elements, final Messager messager) {
+  public ValidatorWriter(
+      final Types types,
+      final Elements elements,
+      final Messager messager
+  ) {
     this.types = types;
     this.elements = elements;
     this.messager = messager;
   }
 
-  public record ValidatedField(String name, TypeMirror type, Element element, String accessor) {
+  public record ValidatedField(
+      String name,
+      TypeMirror type,
+      Element element,
+      String accessor
+  ) {
   }
 
-  public Optional<TypeSpec> validatorFor(final TypeElement type, final String name) {
+  public Optional<TypeSpec> validatorFor(
+      final TypeElement type,
+      final String name
+  ) {
     final List<ValidatedField> fields = collectFields(type);
     if (fields.isEmpty()) {
       return Optional.empty();
@@ -93,7 +105,10 @@ public final class ValidatorWriter {
     return result;
   }
 
-  private String accessor(final TypeElement owner, final String name) {
+  private String accessor(
+      final TypeElement owner,
+      final String name
+  ) {
     final String cap = Character.toUpperCase(name.charAt(0)) + name.substring(1);
     for (final Element enclosed : owner.getEnclosedElements()) {
       if (enclosed.getKind() == ElementKind.METHOD
@@ -112,12 +127,21 @@ public final class ValidatorWriter {
     return "value." + name;
   }
 
-  private TypeSpec generateValidator(final TypeElement type, final List<ValidatedField> fields,
-      final TypeSpec.Builder template) {
+  private TypeSpec generateValidator(
+      final TypeElement type,
+      final List<ValidatedField> fields,
+      final TypeSpec.Builder template
+  ) {
     final TypeName typeName = ClassName.get(type);
     final TypeName violationList = ParameterizedTypeName.get(
-        ClassName.get(List.class), ClassName.get(ConstraintViolation.class));
-    final TypeName resultType = ParameterizedTypeName.get(ClassName.get(Result.class), typeName, violationList);
+        ClassName.get(List.class),
+        ClassName.get(ConstraintViolation.class)
+    );
+    final TypeName resultType = ParameterizedTypeName.get(
+        ClassName.get(Result.class),
+        typeName,
+        violationList
+    );
 
     final MethodSpec.Builder validate = MethodSpec.methodBuilder("validate")
         .addAnnotation(Override.class)
@@ -127,7 +151,12 @@ public final class ValidatorWriter {
         .addStatement("$T<$T> violations = new $T<>()", List.class, ConstraintViolation.class, ArrayList.class)
         .addStatement(
             "if (value == null) { violations.add(new $T($S, $S, null)); return $T.err($T.copyOf(violations)); }",
-            ConstraintViolation.class, "", "must not be null", Result.class, List.class);
+            ConstraintViolation.class,
+            "",
+            "must not be null",
+            Result.class,
+            List.class
+        );
 
     for (final ValidatedField field : fields) {
       generateChecks(validate, field);
@@ -158,7 +187,11 @@ public final class ValidatorWriter {
     return names;
   }
 
-  private MethodSpec escapeMethod(final TypeElement type, final TypeName typeName, final Set<String> escapeFields) {
+  private MethodSpec escapeMethod(
+      final TypeElement type,
+      final TypeName typeName,
+      final Set<String> escapeFields
+  ) {
     final CodeBlock.Builder call = CodeBlock.builder().add("return new $T(", typeName);
     final List<? extends RecordComponentElement> components = type.getRecordComponents();
     for (int i = 0; i < components.size(); i++) {
@@ -182,33 +215,62 @@ public final class ValidatorWriter {
         .build();
   }
 
-  private void generateChecks(final MethodSpec.Builder b, final ValidatedField field) {
+  private void generateChecks(
+      final MethodSpec.Builder b,
+      final ValidatedField field
+  ) {
     final Element element = field.element();
     final String acc = field.accessor();
     final String name = field.name();
     final boolean primitive = field.type().getKind().isPrimitive();
 
     if (!primitive && element.getAnnotation(NotNull.class) != null) {
-      b.addStatement("if ($L == null) { violations.add(new $T($S, $S, null)); }",
-          acc, ConstraintViolation.class, name, "must not be null");
+      b.addStatement(
+          "if ($L == null) { violations.add(new $T($S, $S, null)); }",
+          acc,
+          ConstraintViolation.class,
+          name,
+          "must not be null"
+      );
     }
 
     if (element.getAnnotation(NotBlank.class) != null) {
-      b.addStatement("if ($L == null || $L.isBlank()) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, ConstraintViolation.class, name, "must not be blank", acc);
+      b.addStatement(
+          "if ($L == null || $L.isBlank()) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          ConstraintViolation.class,
+          name,
+          "must not be blank",
+          acc
+      );
     }
 
     if (element.getAnnotation(NotEmpty.class) != null) {
-      b.addStatement("if ($L == null || $L) { violations.add(new $T($S, $S, $L)); }",
-          acc, emptyExpression(field), ConstraintViolation.class, name, "must not be empty", acc);
+      b.addStatement(
+          "if ($L == null || $L) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          emptyExpression(field),
+          ConstraintViolation.class,
+          name,
+          "must not be empty",
+          acc
+      );
     }
 
     final Size size = element.getAnnotation(Size.class);
     if (size != null) {
       b.addStatement(
           "if ($L != null) { int size = $L; if (size < $L || size > $L) { violations.add(new $T($S, $S, $L)); } }",
-          acc, sizeExpression(field), size.min(), size.max(), ConstraintViolation.class, name,
-          "size must be between " + size.min() + " and " + size.max(), acc);
+          acc,
+          sizeExpression(field),
+          size.min(),
+          size.max(),
+          ConstraintViolation.class,
+          name,
+          "size must be between " + size.min() + " and " + size.max(),
+          acc
+      );
     }
 
     final Min min = element.getAnnotation(Min.class);
@@ -236,20 +298,39 @@ public final class ValidatorWriter {
 
     final Digits digits = element.getAnnotation(Digits.class);
     if (digits != null) {
-      final String message = "numeric value out of bounds (<" + digits.integer() + " digits>.<" + digits.fraction()
+      final String message = "numeric value out of bounds (<"
+          + digits.integer()
+          + " digits>.<"
+          + digits.fraction()
           + " digits>)";
       addDigitsCheck(b, field, acc, name, message, digits, primitive);
     }
 
     final Pattern pattern = element.getAnnotation(Pattern.class);
     if (pattern != null) {
-      b.addStatement("if ($L != null && !$L.matches($S)) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, pattern.regexp(), ConstraintViolation.class, name, "must match " + pattern.regexp(), acc);
+      b.addStatement(
+          "if ($L != null && !$L.matches($S)) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          pattern.regexp(),
+          ConstraintViolation.class,
+          name,
+          "must match " + pattern.regexp(),
+          acc
+      );
     }
 
     if (element.getAnnotation(Email.class) != null) {
-      b.addStatement("if ($L != null && !$L.matches($S)) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, EMAIL_REGEX, ConstraintViolation.class, name, "must be a valid email address", acc);
+      b.addStatement(
+          "if ($L != null && !$L.matches($S)) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          EMAIL_REGEX,
+          ConstraintViolation.class,
+          name,
+          "must be a valid email address",
+          acc
+      );
     }
 
     if (element.getAnnotation(Past.class) != null) {
@@ -261,80 +342,218 @@ public final class ValidatorWriter {
 
     if (element.getAnnotation(AssertTrue.class) != null) {
       if (primitive) {
-        b.addStatement("if (!$L) { violations.add(new $T($S, $S, $L)); }",
-            acc, ConstraintViolation.class, name, "must be true", acc);
+        b.addStatement(
+            "if (!$L) { violations.add(new $T($S, $S, $L)); }",
+            acc,
+            ConstraintViolation.class,
+            name,
+            "must be true",
+            acc
+        );
       } else {
-        b.addStatement("if ($L == null || !$L) { violations.add(new $T($S, $S, $L)); }",
-            acc, acc, ConstraintViolation.class, name, "must be true", acc);
+        b.addStatement(
+            "if ($L == null || !$L) { violations.add(new $T($S, $S, $L)); }",
+            acc,
+            acc,
+            ConstraintViolation.class,
+            name,
+            "must be true",
+            acc
+        );
       }
     }
 
     if (element.getAnnotation(AssertFalse.class) != null) {
       if (primitive) {
-        b.addStatement("if ($L) { violations.add(new $T($S, $S, $L)); }",
-            acc, ConstraintViolation.class, name, "must be false", acc);
+        b.addStatement(
+            "if ($L) { violations.add(new $T($S, $S, $L)); }",
+            acc,
+            ConstraintViolation.class,
+            name,
+            "must be false",
+            acc
+        );
       } else {
-        b.addStatement("if ($L == null || $L) { violations.add(new $T($S, $S, $L)); }",
-            acc, acc, ConstraintViolation.class, name, "must be false", acc);
+        b.addStatement(
+            "if ($L == null || $L) { violations.add(new $T($S, $S, $L)); }",
+            acc,
+            acc,
+            ConstraintViolation.class,
+            name,
+            "must be false",
+            acc
+        );
       }
     }
   }
 
-  private void addDigitsCheck(final MethodSpec.Builder b, final ValidatedField field, final String acc,
-      final String name, final String message, final Digits digits, final boolean primitive) {
+  private void addDigitsCheck(
+      final MethodSpec.Builder b,
+      final ValidatedField field,
+      final String acc,
+      final String name,
+      final String message,
+      final Digits digits,
+      final boolean primitive
+  ) {
     if (primitive) {
       b.addStatement(
           "{ $T d = new $T($T.valueOf($L)); if (d.precision() - d.scale() > $L || d.scale() > $L)"
               + " { violations.add(new $T($S, $S, $L)); } }",
-          java.math.BigDecimal.class, java.math.BigDecimal.class, String.class, acc,
-          digits.integer(), digits.fraction(), ConstraintViolation.class, name, message, acc);
+          java.math.BigDecimal.class,
+          java.math.BigDecimal.class,
+          String.class,
+          acc,
+          digits.integer(),
+          digits.fraction(),
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     } else {
       b.addStatement(
           "if ($L != null) { $T d = new $T($T.valueOf($L)); if (d.precision() - d.scale() > $L || d.scale() > $L)"
               + " { violations.add(new $T($S, $S, $L)); } }",
-          acc, java.math.BigDecimal.class, java.math.BigDecimal.class, String.class, acc,
-          digits.integer(), digits.fraction(), ConstraintViolation.class, name, message, acc);
+          acc,
+          java.math.BigDecimal.class,
+          java.math.BigDecimal.class,
+          String.class,
+          acc,
+          digits.integer(),
+          digits.fraction(),
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     }
   }
 
-  private void addNumericBound(final MethodSpec.Builder b, final ValidatedField field, final String acc,
-      final String name, final String message, final String comparator, final long bound) {
+  private void addNumericBound(
+      final MethodSpec.Builder b,
+      final ValidatedField field,
+      final String acc,
+      final String name,
+      final String message,
+      final String comparator,
+      final long bound
+  ) {
     if (TypeSupport.isSameType(types, elements, field.type(), java.math.BigDecimal.class)) {
-      b.addStatement("if ($L != null && $L.compareTo($T.valueOf($L)) $L 0) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, java.math.BigDecimal.class, bound, comparator, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L != null && $L.compareTo($T.valueOf($L)) $L 0) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          java.math.BigDecimal.class,
+          bound,
+          comparator,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     } else if (TypeSupport.isSameType(types, elements, field.type(), java.math.BigInteger.class)) {
-      b.addStatement("if ($L != null && $L.compareTo($T.valueOf($L)) $L 0) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, java.math.BigInteger.class, bound, comparator, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L != null && $L.compareTo($T.valueOf($L)) $L 0) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          java.math.BigInteger.class,
+          bound,
+          comparator,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     } else if (field.type().getKind().isPrimitive()) {
-      b.addStatement("if ($L $L $L) { violations.add(new $T($S, $S, $L)); }",
-          acc, comparator, bound, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L $L $L) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          comparator,
+          bound,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     } else {
-      b.addStatement("if ($L != null && $L $L $L) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, comparator, bound, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L != null && $L $L $L) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          comparator,
+          bound,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     }
   }
 
-  private void addSignCheck(final MethodSpec.Builder b, final ValidatedField field, final String acc,
-      final String name, final String message, final String check) {
+  private void addSignCheck(
+      final MethodSpec.Builder b,
+      final ValidatedField field,
+      final String acc,
+      final String name,
+      final String message,
+      final String check
+  ) {
     if (TypeSupport.isSameType(types, elements, field.type(), java.math.BigDecimal.class)
         || TypeSupport.isSameType(types, elements, field.type(), java.math.BigInteger.class)) {
-      b.addStatement("if ($L != null && $L.signum() $L) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, check, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L != null && $L.signum() $L) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          check,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     } else if (field.type().getKind().isPrimitive()) {
-      b.addStatement("if ($L $L) { violations.add(new $T($S, $S, $L)); }",
-          acc, check, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L $L) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          check,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     } else {
-      b.addStatement("if ($L != null && $L $L) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, check, ConstraintViolation.class, name, message, acc);
+      b.addStatement(
+          "if ($L != null && $L $L) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          check,
+          ConstraintViolation.class,
+          name,
+          message,
+          acc
+      );
     }
   }
 
-  private void addTemporalCheck(final MethodSpec.Builder b, final ValidatedField field, final String acc,
-      final String name, final boolean past) {
+  private void addTemporalCheck(
+      final MethodSpec.Builder b,
+      final ValidatedField field,
+      final String acc,
+      final String name,
+      final boolean past
+  ) {
     if (TypeSupport.isSameType(types, elements, field.type(), java.util.Date.class)) {
-      b.addStatement("if ($L != null && !$L.$L(new $T())) { violations.add(new $T($S, $S, $L)); }",
-          acc, acc, past ? "before" : "after", java.util.Date.class, ConstraintViolation.class, name,
-          past ? "must be in the past" : "must be in the future", acc);
+      b.addStatement(
+          "if ($L != null && !$L.$L(new $T())) { violations.add(new $T($S, $S, $L)); }",
+          acc,
+          acc,
+          past ? "before" : "after",
+          java.util.Date.class,
+          ConstraintViolation.class,
+          name,
+          past ? "must be in the past" : "must be in the future",
+          acc
+      );
       return;
     }
     final Optional<TypeElement> temporal = TypeSupport.asTypeElement(types, field.type());
@@ -344,9 +563,17 @@ public final class ValidatorWriter {
       return;
     }
     final ClassName temporalType = ClassName.get(temporal.get());
-    b.addStatement("if ($L != null && !$L.$L($T.now())) { violations.add(new $T($S, $S, $L)); }",
-        acc, acc, past ? "isBefore" : "isAfter", temporalType, ConstraintViolation.class, name,
-        past ? "must be in the past" : "must be in the future", acc);
+    b.addStatement(
+        "if ($L != null && !$L.$L($T.now())) { violations.add(new $T($S, $S, $L)); }",
+        acc,
+        acc,
+        past ? "isBefore" : "isAfter",
+        temporalType,
+        ConstraintViolation.class,
+        name,
+        past ? "must be in the past" : "must be in the future",
+        acc
+    );
   }
 
   private String sizeExpression(final ValidatedField field) {

@@ -98,15 +98,22 @@ public final class ValidationProcessor extends IridiumProcessor {
         .addParameter(ClassName.get(ValidatorRegistry.class), "registry");
 
     for (final TypeElement type : validatedTypes) {
-      register.addStatement("registry.register($T.class, new $T())",
-          ClassName.get(type), ClassName.get(generatedPackage, type.getSimpleName() + "Validator"));
+      register.addStatement(
+          "registry.register($T.class, new $T())",
+          ClassName.get(type),
+          ClassName.get(generatedPackage, type.getSimpleName() + "Validator")
+      );
     }
 
     SourceWriter.writeJava(filer, generatedPackage, SourceWriter.generatedType(REGISTRAR_CLASS)
         .addSuperinterface(ClassName.get(ValidationRegistrar.class))
         .addMethod(register.build())
         .build(), validatedTypes.toArray(new TypeElement[0]));
-    SourceWriter.writeService(filer, ValidationRegistrar.class, generatedPackage + "." + REGISTRAR_CLASS,
-        validatedTypes.toArray(new TypeElement[0]));
+    SourceWriter.writeService(
+        filer,
+        ValidationRegistrar.class,
+        generatedPackage + "." + REGISTRAR_CLASS,
+        validatedTypes.toArray(new TypeElement[0])
+    );
   }
 }

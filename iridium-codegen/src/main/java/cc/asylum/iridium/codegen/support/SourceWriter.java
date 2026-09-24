@@ -37,8 +37,12 @@ public final class SourceWriter {
         .build();
   }
 
-  public static void writeJava(final Filer filer, final String pkg, final TypeSpec spec,
-      final Element... originatingElements) {
+  public static void writeJava(
+      final Filer filer,
+      final String pkg,
+      final TypeSpec spec,
+      final Element... originatingElements
+  ) {
     final String fqcn = pkg + "." + spec.name;
     try {
       final JavaFileObject source = filer.createSourceFile(fqcn, originatingElements);
@@ -50,13 +54,21 @@ public final class SourceWriter {
     }
   }
 
-  public static void writeService(final Filer filer, final Class<?> service, final String implFqcn,
-      final Element... originatingElements) {
+  public static void writeService(
+      final Filer filer,
+      final Class<?> service,
+      final String implFqcn,
+      final Element... originatingElements
+  ) {
     writeService(filer, service.getName(), implFqcn, originatingElements);
   }
 
-  public static void writeService(final Filer filer, final String serviceName, final String implFqcn,
-      final Element... originatingElements) {
+  public static void writeService(
+      final Filer filer,
+      final String serviceName,
+      final String implFqcn,
+      final Element... originatingElements
+  ) {
     try {
       final var file = filer.createResource(
           StandardLocation.CLASS_OUTPUT, "", "META-INF/services/" + serviceName, originatingElements);
