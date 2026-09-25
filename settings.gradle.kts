@@ -31,4 +31,3 @@ extension("iridium-openapi")
 extension("iridium-hot-reloading")
 
 demo("iridium-demo-hello")
-demo("iridium-demo-shop")
