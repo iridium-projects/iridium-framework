@@ -1,45 +1,208 @@
 package cc.asylum.iridium.web.router;
 
+import cc.asylum.iridium.core.util.Lists;
+import cc.asylum.iridium.core.util.Paths;
+import io.undertow.util.HeaderMap;
+
+import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Map.Entry;
+import java.util.function.Supplier;
 
-public record Request(
-    String method,
-    String path,
-    Map<String, List<String>> headers,
-    Map<String, List<String>> queryParameters,
-    Map<String, String> pathVariables,
-    byte[] body) {
+public final class Request {
 
-  public Optional<String> header(final String name) {
-    return headers.entrySet().stream()
-        .filter(entry -> entry.getKey().equalsIgnoreCase(name))
-        .map(Map.Entry::getValue)
-        .flatMap(List::stream)
-        .findFirst();
+  private final String method;
+  private final String path;
+  private final String[] segments;
+
+  private final HeaderMap headerMap;
+  private final Map<String, List<String>> headers;
+
+  private final Map<String, ? extends Collection<String>> queryParameters;
+  private final Map<String, String> pathVariables;
+
+  private final byte[] body;
+  private final Supplier<InputStream> input;
+
+  public Request(
+      final String method,
+      final String path,
+      final Map<String, List<String>> headers,
+      final Map<String, ? extends Collection<String>> queryParameters,
+      final Map<String, String> pathVariables,
+      final byte[] body) {
+    this(
+        method,
+        path,
+        null,
+        null,
+        headers,
+        queryParameters,
+        pathVariables,
+        body,
+        null);
+  }
+
+  public Request(
+      final String method,
+      final String path,
+      final String[] segments,
+      final HeaderMap headerMap,
+      final Map<String, ? extends Collection<String>> queryParameters,
+      final Supplier<InputStream> input) {
+    this(
+        method,
+        path,
+        segments,
+        headerMap,
+        null,
+        queryParameters,
+        Map.of(),
+        null,
+        input);
+  }
+
+  private Request(
+      final String method,
+      final String path,
+      final String[] segments,
+      final HeaderMap headerMap,
+      final Map<String, List<String>> headers,
+      final Map<String, ? extends Collection<String>> queryParameters,
+      final Map<String, String> pathVariables,
+      final byte[] body,
+      final Supplier<InputStream> input) {
+    this.method = method;
+    this.path = path;
+    this.segments = segments;
+    this.headerMap = headerMap;
+    this.headers = headers;
+    this.queryParameters = queryParameters;
+    this.pathVariables = pathVariables;
+    this.body = body;
+    this.input = input;
+  }
+
+  public String method() {
+    return method;
+  }
+
+  public String path() {
+    return path;
+  }
+
+  public String[] segments() {
+    return segments;
+  }
+
+  public HeaderMap headerMap() {
+    return headerMap;
+  }
+
+  public Map<String, List<String>> headers() {
+    return headers;
+  }
+
+  public Map<String, ? extends Collection<String>> queryParameters() {
+    return queryParameters;
+  }
+
+  public Map<String, String> pathVariables() {
+    return pathVariables;
+  }
+
+  public byte[] body() {
+    return body;
+  }
+
+  public InputStream input() {
+    return input == null ? null : input.get();
+  }
+
+  public String header(final String name) {
+    return Lists.first(headers(name));
   }
 
   public List<String> headers(final String name) {
-    return headers.entrySet().stream()
-        .filter(entry -> entry.getKey().equalsIgnoreCase(name))
-        .map(Map.Entry::getValue)
-        .findFirst()
-        .orElse(List.of());
+    if (name == null) {
+      return List.of();
+    }
+
+    if (headerMap != null) {
+      final var values = headerMap.get(name);
+      return values == null ? List.of() : values;
+    }
+
+    if (headers == null) {
+      return List.of();
+    }
+
+    final List<String> values = headers.get(name);
+    if (values != null) {
+      return values;
+    }
+
+    final String normalized = name.toLowerCase(Locale.ROOT);
+
+    for (final Entry<String, List<String>> entry : headers.entrySet()) {
+      final String key = entry.getKey();
+
+      if (key != null && key.toLowerCase(Locale.ROOT).equals(normalized)) {
+        return entry.getValue() == null ? List.of() : entry.getValue();
+      }
+    }
+
+    return List.of();
   }
 
-  public Optional<String> query(final String name) {
-    return Optional.ofNullable(queryParameters.get(name))
-        .flatMap(values -> values.stream().findFirst());
+  public String query(final String name) {
+    if (queryParameters == null || name == null) {
+      return null;
+    }
+
+    return Lists.first(queryParameters.get(name));
   }
 
-  public Optional<String> pathVariable(final String name) {
-    return pathVariables == null
-        ? Optional.empty()
-        : Optional.ofNullable(pathVariables.get(name));
+  public String pathVariable(final String name) {
+    return pathVariables == null ? null : pathVariables.get(name);
   }
 
   public Request withPathVariables(final Map<String, String> variables) {
-    return new Request(method, path, headers, queryParameters, variables, body);
+    return new Request(
+        method,
+        path,
+        segments,
+        headerMap,
+        headers,
+        queryParameters,
+        variables,
+        body,
+        input);
+  }
+
+  public Request withBody(final byte[] bytes) {
+    return new Request(
+        method,
+        path,
+        segments,
+        headerMap,
+        headers,
+        queryParameters,
+        pathVariables,
+        bytes,
+        input);
+  }
+
+  public static String[] split(final String path) {
+    return Paths.segments(path);
+  }
+
+  public static String normalizeMethod(final String method) {
+    return method == null
+        ? ""
+        : method.toUpperCase(Locale.ROOT);
   }
 }

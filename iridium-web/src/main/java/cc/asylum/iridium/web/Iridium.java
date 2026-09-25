@@ -50,10 +50,21 @@ public final class Iridium {
       final var message = exception.getMessage();
 
       log.error("Failed to start web server on {}:{}: {}", config.host(), config.port(), message);
+
       throw new IllegalStateException(message, exception);
     }
 
-    server.registerRoutes();
+    final var routeResult = server.registerRoutes();
+
+    if (routeResult.isErr()) {
+      final var exception = routeResult.unwrapErr();
+      final var message = exception.getMessage();
+
+      log.error("Failed to register routes: {}", message);
+
+      throw new IllegalStateException(message, exception);
+    }
+
     log.info("Iridium application listening on http://localhost:{}", config.port());
 
     Runtime.getRuntime().addShutdownHook(new Thread(server::stop, "iridium-shutdown"));

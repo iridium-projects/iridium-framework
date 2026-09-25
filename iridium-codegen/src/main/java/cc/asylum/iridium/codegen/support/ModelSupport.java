@@ -5,6 +5,7 @@ import com.io7m.jodist.TypeName;
 import cc.asylum.iridium.codegen.writer.ConfigBinding;
 import cc.asylum.iridium.config.Value;
 import cc.asylum.iridium.core.annotation.Internal;
+import cc.asylum.iridium.core.util.Strings;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -73,10 +74,7 @@ public final class ModelSupport {
   }
 
   public static String decapitalize(final String name) {
-    if (name.isEmpty()) {
-      return name;
-    }
-    return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+    return Strings.decapitalize(name);
   }
 
   public static List<TypeElement> rootTypes(

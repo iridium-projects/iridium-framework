@@ -13,7 +13,6 @@ include("iridium-core")
 include("iridium-web")
 include("iridium-codegen")
 include("iridium-config")
-include("iridium-tests")
 
 fun extension(name: String) {
     include(name)

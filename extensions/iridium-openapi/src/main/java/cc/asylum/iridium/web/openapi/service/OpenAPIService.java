@@ -1,7 +1,9 @@
 package cc.asylum.iridium.web.openapi.service;
 
 import cc.asylum.iridium.core.result.Result;
+import cc.asylum.iridium.core.util.Paths;
 import cc.asylum.iridium.web.openapi.config.OpenAPIConfig;
+import cc.asylum.iridium.web.router.Route;
 import cc.asylum.iridium.web.router.Router;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -21,7 +23,7 @@ public final class OpenAPIService {
         .title(openAPIConfig.title())
         .version(openAPIConfig.version()));
 
-    for (final Router.Route route : router.getRoutes()) {
+    for (final Route route : router.getRoutes()) {
       final var methodResult = httpMethod(route.method());
 
       if (methodResult.isErr()) {
@@ -45,16 +47,17 @@ public final class OpenAPIService {
     return new PathItem();
   }
 
-  private Operation operation(final Router.Route route) {
+  private Operation operation(final Route route) {
     final Operation operation = new Operation()
         .operationId(operationId(route))
         .responses(new ApiResponses()
             .addApiResponse("200", new ApiResponse().description("OK")));
 
-    for (final String segment : route.path().split("/")) {
-      if (segment.startsWith("{") && segment.endsWith("}") && segment.length() > 2) {
+    for (final String segment : Paths.segments(route.path())) {
+      final String variable = Paths.variable(segment);
+      if (variable != null && !variable.isEmpty()) {
         operation.addParametersItem(new Parameter()
-            .name(segment.substring(1, segment.length() - 1))
+            .name(variable)
             .in("path")
             .required(true)
             .schema(new StringSchema()));
@@ -64,7 +67,7 @@ public final class OpenAPIService {
     return operation;
   }
 
-  private String operationId(final Router.Route route) {
+  private String operationId(final Route route) {
     return route.method().toLowerCase() + route.path().replaceAll("[^A-Za-z0-9]+", "_");
   }
 

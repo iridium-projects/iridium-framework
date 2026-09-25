@@ -9,5 +9,5 @@ repositories {
 
 dependencies() {
     api(project(":iridium-core"))
-    api("io.avaje:avaje-jsonb:3.16")
+    compileOnly("io.undertow:undertow-core:2.4.3.Final")
 }

@@ -3,6 +3,7 @@ package cc.asylum.iridium.codegen.support;
 import cc.asylum.iridium.core.annotation.Internal;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -72,6 +73,53 @@ public final class TypeSupport {
     return asTypeElement(types, type)
         .map(element -> element.getQualifiedName().toString())
         .orElse(type.toString());
+  }
+
+  public static String boxed(final String name) {
+    return switch (name) {
+      case "boolean" -> "java.lang.Boolean";
+      case "byte" -> "java.lang.Byte";
+      case "short" -> "java.lang.Short";
+      case "int" -> "java.lang.Integer";
+      case "long" -> "java.lang.Long";
+      case "float" -> "java.lang.Float";
+      case "double" -> "java.lang.Double";
+      case "char" -> "java.lang.Character";
+      default -> name;
+    };
+  }
+
+  public static String boxed(final Types types, final TypeMirror type) {
+    return switch (type.getKind()) {
+      case BOOLEAN -> "java.lang.Boolean";
+      case BYTE -> "java.lang.Byte";
+      case SHORT -> "java.lang.Short";
+      case INT -> "java.lang.Integer";
+      case LONG -> "java.lang.Long";
+      case FLOAT -> "java.lang.Float";
+      case DOUBLE -> "java.lang.Double";
+      case CHAR -> "java.lang.Character";
+      default -> qualifiedName(types, type);
+    };
+  }
+
+  public static boolean isBoxed(final String name) {
+    return switch (name) {
+      case "java.lang.Boolean", "java.lang.Byte", "java.lang.Short", "java.lang.Integer",
+          "java.lang.Long", "java.lang.Character", "java.lang.Float", "java.lang.Double" -> true;
+      default -> false;
+    };
+  }
+
+  public static boolean isString(final Types types, final TypeMirror type) {
+    final String name = qualifiedName(types, type);
+    return "java.lang.String".equals(name) || "java.lang.CharSequence".equals(name);
+  }
+
+  public static boolean isEnum(final Types types, final TypeMirror type) {
+    return asTypeElement(types, type)
+        .filter(element -> element.getKind() == ElementKind.ENUM)
+        .isPresent();
   }
 
   public static Optional<TypeMirror> optionalValueType(

@@ -7,15 +7,15 @@ import org.slf4j.helpers.BasicMDCAdapter;
 import org.slf4j.spi.MDCAdapter;
 import org.slf4j.spi.SLF4JServiceProvider;
 
-public final class IridiumLogProvider implements SLF4JServiceProvider {
+public final class LogProvider implements SLF4JServiceProvider {
 
   private final IMarkerFactory markers = new BasicMarkerFactory();
   private final MDCAdapter mdc = new BasicMDCAdapter();
-  private IridiumLoggerFactory factory;
+  private LoggerFactory factory;
 
   @Override
   public void initialize() {
-    factory = new IridiumLoggerFactory();
+    factory = new LoggerFactory();
   }
 
   @Override

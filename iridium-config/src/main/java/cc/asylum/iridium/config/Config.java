@@ -1,12 +1,14 @@
 package cc.asylum.iridium.config;
 
 import cc.asylum.iridium.core.result.Result;
+import cc.asylum.iridium.core.util.Strings;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Function;
 
@@ -108,11 +110,15 @@ public final class Config {
   }
 
   public static Result<Boolean, ConfigError> parseBool(final String value) {
-    return switch (value.trim().toLowerCase(Locale.ROOT)) {
-      case "true", "yes", "on", "1" -> Result.ok(true);
-      case "false", "no", "off", "0" -> Result.ok(false);
-      default -> Result.err(ConfigError.of("Invalid boolean '" + value + "'"));
-    };
+    if (value == null || value.isEmpty() || value.isBlank()) {
+      return Result.err(ConfigError.of("Invalid boolean. Value can't be blank or null"));
+    }
+
+    final Boolean parsed = Boolean.valueOf(value);
+
+    return parsed == null
+        ? Result.err(ConfigError.of("Invalid boolean '" + value + "'"))
+        : Result.ok(parsed);
   }
 
   public static <E extends Enum<E>> Result<E, ConfigError> enumeration(
@@ -223,11 +229,8 @@ public final class Config {
     }
 
     final List<Result<T, ConfigError>> items = new ArrayList<>();
-    for (final String part : raw.split(",", -1)) {
-      final String trimmed = part.trim();
-      if (!trimmed.isEmpty()) {
-        items.add(convert.apply(trimmed).mapErr(error -> ConfigError.invalid(key, trimmed)));
-      }
+    for (final String trimmed : Strings.split(raw, ',')) {
+      items.add(convert.apply(trimmed).mapErr(error -> ConfigError.invalid(key, trimmed)));
     }
     return sequence(items);
   }

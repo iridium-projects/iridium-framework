@@ -7,7 +7,10 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Internal
@@ -62,6 +65,38 @@ public final class MirrorSupport {
       if (annotationElement instanceof final TypeElement typeElement
           && typeElement.getQualifiedName().contentEquals(name)) {
         return mirror;
+      }
+    }
+    return null;
+  }
+
+  public static List<AnnotationMirror> mirrors(
+      final Element element,
+      final Class<? extends Annotation> type
+  ) {
+    final String name = type.getCanonicalName();
+    final List<AnnotationMirror> found = new ArrayList<>();
+    for (final AnnotationMirror mirror : element.getAnnotationMirrors()) {
+      if (qualified(mirror).equals(name)) {
+        found.add(mirror);
+      }
+    }
+    return found;
+  }
+
+  public static String qualified(final AnnotationMirror mirror) {
+    return ((TypeElement) mirror.getAnnotationType().asElement()).getQualifiedName().toString();
+  }
+
+  public static Object member(
+      final Elements elements,
+      final AnnotationMirror mirror,
+      final String name
+  ) {
+    for (final Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry
+        : elements.getElementValuesWithDefaults(mirror).entrySet()) {
+      if (entry.getKey().getSimpleName().contentEquals(name)) {
+        return entry.getValue().getValue();
       }
     }
     return null;
