@@ -2,6 +2,7 @@ package cc.asylum.iridium.config;
 
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.result.Unit;
+import cc.asylum.iridium.core.util.Strings;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -206,7 +207,7 @@ final class Sources {
       final Layer arguments,
       final Layer system,
       final Map<String, String> environment) {
-    final String raw = firstNonBlank(
+    final String raw = Strings.firstNonBlank(
         arguments.get("iridium.profiles"),
         system.get("iridium.profiles"),
         environment.get("IRIDIUM_PROFILES"));
@@ -215,26 +216,13 @@ final class Sources {
     }
 
     final List<String> names = new ArrayList<>();
-    for (final String part : raw.split(",")) {
-      final String name = part.trim();
-      if (name.isEmpty()) {
-        continue;
-      }
+    for (final String name : Strings.split(raw, ',')) {
       if (!PROFILE.matcher(name).matches()) {
         return Result.err(ConfigError.of("Invalid configuration profile '" + name + "'"));
       }
       names.add(name);
     }
     return Result.ok(names);
-  }
-
-  private static String firstNonBlank(final String... values) {
-    for (final String value : values) {
-      if (value != null && !value.isBlank()) {
-        return value;
-      }
-    }
-    return null;
   }
 
   private static Map<String, String> parseArgs(final String[] args) {

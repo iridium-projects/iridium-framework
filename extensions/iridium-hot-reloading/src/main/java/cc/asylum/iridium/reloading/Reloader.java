@@ -8,6 +8,7 @@ import java.nio.file.Path;
 
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.result.Unit;
+import cc.asylum.iridium.core.util.Strings;
 import cc.asylum.iridium.web.webserver.WebServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,7 @@ public class Reloader {
   }
 
   static boolean generated(final String binaryName) {
-    final var simpleName = binaryName.substring(binaryName.lastIndexOf('.') + 1);
+    final var simpleName = Strings.simpleName(binaryName);
 
     return simpleName.endsWith("RegistrarGenerated") || simpleName.endsWith("Validator");
   }

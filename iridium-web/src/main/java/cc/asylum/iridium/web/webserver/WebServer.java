@@ -23,6 +23,7 @@ public interface WebServer {
 
   static Result<Unit, Exception> reload() {
     final Result<Unit, Exception> beans = BeanPool.initialize();
+
     if (beans.isErr()) {
       return beans;
     }

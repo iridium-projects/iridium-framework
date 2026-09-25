@@ -8,7 +8,10 @@ import com.io7m.jodist.TypeSpec;
 import cc.asylum.iridium.codegen.binding.ParameterBinder;
 import cc.asylum.iridium.codegen.binding.RequestValues;
 import cc.asylum.iridium.codegen.support.Diagnostics;
+import cc.asylum.iridium.codegen.support.MirrorSupport;
 import cc.asylum.iridium.codegen.support.TypeSupport;
+import cc.asylum.iridium.core.util.Lists;
+import cc.asylum.iridium.core.util.Strings;
 import org.babyfish.jimmer.sql.JoinType;
 import org.babyfish.jimmer.sql.ast.LikeMode;
 import org.babyfish.jimmer.sql.ast.Predicate;
@@ -32,7 +35,6 @@ import javax.lang.model.util.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.lang.annotation.Annotation;
@@ -149,7 +151,8 @@ final class SpecBinding implements ParameterBinder {
         if (!emitNode(handle, parameter, not.child(), inner)) {
           yield false;
         }
-        into.add(not(inner.isEmpty() ? "null" : inner.get(0)));
+        final String child = Lists.first(inner);
+        into.add(not(child == null ? "null" : child));
         yield true;
       }
     };
@@ -169,7 +172,7 @@ final class SpecBinding implements ParameterBinder {
       }
     }
     if (parts.isEmpty()) {
-      error(parameter, "@" + operator.substring(0, 1).toUpperCase(Locale.ROOT) + operator.substring(1) + " requires at least one spec");
+      error(parameter, "@" + Strings.capitalize(operator) + " requires at least one spec");
       return false;
     }
     into.add(parts.size() == 1 ? parts.get(0) : PREDICATE + "." + operator + "(" + String.join(", ", parts) + ")");
@@ -308,18 +311,16 @@ final class SpecBinding implements ParameterBinder {
       }
       return type + "." + raw;
     }
-    if (isString(leaf.type())) {
+    if (string(leaf.type())) {
       return quote(raw);
     }
     if ("java.lang.Boolean".equals(boxed(leaf.type())) || leaf.type().getKind() == TypeKind.BOOLEAN) {
-      return switch (raw.trim().toLowerCase(Locale.ROOT)) {
-        case "true", "yes", "on", "1" -> "true";
-        case "false", "no", "off", "0" -> "false";
-        default -> {
-          error(site, "invalid boolean constVal '" + raw + "'");
-          yield null;
-        }
-      };
+      final Boolean parsed = Strings.truthy(raw);
+      if (parsed == null) {
+        error(site, "invalid boolean constVal '" + raw + "'");
+        return null;
+      }
+      return parsed.toString();
     }
     try {
       return switch (boxed(leaf.type())) {
@@ -350,11 +351,7 @@ final class SpecBinding implements ParameterBinder {
   }
 
   private Boolean truthy(final String raw) {
-    return switch (raw.trim().toLowerCase(Locale.ROOT)) {
-      case "true", "yes", "on", "1" -> true;
-      case "false", "no", "off", "0" -> false;
-      default -> null;
-    };
+    return Strings.truthy(raw);
   }
 
   private String call(final LeafNode leaf, final String value) {
@@ -391,7 +388,7 @@ final class SpecBinding implements ParameterBinder {
     if (isEnum(leaf.type())) {
       return VALUES + ".enumerations(" + raw + ", " + qualified(leaf.type()) + ".class)";
     }
-    if (isString(leaf.type())) {
+    if (string(leaf.type())) {
       return VALUES + ".texts(" + raw + ")";
     }
     final String parser = switch (boxed(leaf.type())) {
@@ -551,7 +548,7 @@ final class SpecBinding implements ParameterBinder {
   }
 
   private List<String> defaults(final String op, final String path) {
-    final String leaf = path.substring(path.lastIndexOf('.') + 1);
+    final String leaf = Strings.simpleName(path);
     if ("Between".equals(op)) {
       return List.of(leaf + "From", leaf + "To");
     }
@@ -712,7 +709,7 @@ final class SpecBinding implements ParameterBinder {
   }
 
   private boolean compatible(final String op, final TypeMirror type) {
-    final boolean string = isString(type);
+    final boolean string = string(type);
     final boolean bool = type.getKind() == TypeKind.BOOLEAN || "java.lang.Boolean".equals(qualified(type));
     return switch (op) {
       case "Like", "LikeIgnoreCase", "NotLike", "StartingWith", "EndingWith", "EqualIgnoreCase", "Empty", "NotEmpty" -> string;
@@ -726,7 +723,7 @@ final class SpecBinding implements ParameterBinder {
     if (isEnum(type)) {
       return "enumeration";
     }
-    if (isString(type)) {
+    if (string(type)) {
       return "text";
     }
     final TypeKind kind = type.getKind();
@@ -771,22 +768,11 @@ final class SpecBinding implements ParameterBinder {
   }
 
   private String boxed(final TypeMirror type) {
-    return switch (type.getKind()) {
-      case BOOLEAN -> "java.lang.Boolean";
-      case BYTE -> "java.lang.Byte";
-      case SHORT -> "java.lang.Short";
-      case INT -> "java.lang.Integer";
-      case LONG -> "java.lang.Long";
-      case FLOAT -> "java.lang.Float";
-      case DOUBLE -> "java.lang.Double";
-      case CHAR -> "java.lang.Character";
-      default -> qualified(type);
-    };
+    return TypeSupport.boxed(types, type);
   }
 
-  private boolean isString(final TypeMirror type) {
-    final String name = qualified(type);
-    return "java.lang.String".equals(name) || "java.lang.CharSequence".equals(name);
+  private boolean string(final TypeMirror type) {
+    return TypeSupport.isString(types, type);
   }
 
   private boolean isEnum(final TypeMirror type) {
@@ -818,9 +804,7 @@ final class SpecBinding implements ParameterBinder {
     if (!(value instanceof final TypeMirror type)) {
       return null;
     }
-    final String name = type.toString();
-    final int dot = name.lastIndexOf('.');
-    return canonical(dot < 0 ? name : name.substring(dot + 1));
+    return canonical(Strings.simpleName(type.toString()));
   }
 
   private String canonical(final String name) {
@@ -883,28 +867,16 @@ final class SpecBinding implements ParameterBinder {
   }
 
   private String quote(final String value) {
-    return "\"" + value
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\n", "\\n")
-        .replace("\r", "\\r")
-        + "\"";
+    return Strings.quote(value);
   }
 
   private AnnotationMirror mirror(final Element element, final Class<? extends Annotation> type) {
     final List<AnnotationMirror> found = mirrors(element, type);
-    return found.isEmpty() ? null : found.get(0);
+    return Lists.first(found);
   }
 
   private List<AnnotationMirror> mirrors(final Element element, final Class<? extends Annotation> type) {
-    final String name = type.getCanonicalName();
-    final List<AnnotationMirror> found = new ArrayList<>();
-    for (final AnnotationMirror mirror : element.getAnnotationMirrors()) {
-      if (qualified(mirror).equals(name)) {
-        found.add(mirror);
-      }
-    }
-    return found;
+    return MirrorSupport.mirrors(element, type);
   }
 
   private List<AnnotationMirror> annotations(final AnnotationMirror mirror, final String member) {
@@ -948,17 +920,11 @@ final class SpecBinding implements ParameterBinder {
   }
 
   private Object member(final AnnotationMirror mirror, final String name) {
-    for (final Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry
-        : elements.getElementValuesWithDefaults(mirror).entrySet()) {
-      if (entry.getKey().getSimpleName().contentEquals(name)) {
-        return entry.getValue().getValue();
-      }
-    }
-    return null;
+    return MirrorSupport.member(elements, mirror, name);
   }
 
   private String qualified(final AnnotationMirror mirror) {
-    return ((TypeElement) mirror.getAnnotationType().asElement()).getQualifiedName().toString();
+    return MirrorSupport.qualified(mirror);
   }
 
   private String qualified(final TypeMirror type) {
@@ -1002,7 +968,8 @@ final class SpecBinding implements ParameterBinder {
       boolean collection
   ) implements Node {
     private String param() {
-      return params.isEmpty() ? "" : params.get(0);
+      final String first = Lists.first(params);
+      return first == null ? "" : first;
     }
   }
 

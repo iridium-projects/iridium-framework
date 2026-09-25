@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.result.Unit;
+import cc.asylum.iridium.core.util.Names;
 import cc.asylum.iridium.reloading.Reloader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,9 +119,7 @@ public class ClassWatcher implements Runnable {
   private String binaryName(final Path classFile) {
     final var relative = root.relativize(classFile).toString();
 
-    return relative.substring(0, relative.length() - ".class".length())
-        .replace('/', '.')
-        .replace('\\', '.');
+    return Names.binary(relative);
   }
 
   private void registerTree(final Path start, final WatchService watchService) throws Exception {

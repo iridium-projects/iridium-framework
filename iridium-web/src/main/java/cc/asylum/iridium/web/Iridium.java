@@ -25,6 +25,17 @@ public final class Iridium {
     this.config = config;
   }
 
+  /**
+   * Boostraps the application and blocks until the process is interrupted.
+   *
+   *
+   * @param application class annotated with {@link WebApplication}
+   * @param args        application arguments. Arguments are forwarded to
+   *                    configuration intialization
+   * @throws IllegalStateException if application lacks {@link WebApplication},
+   *                               bean intialization fails, or the server fails
+   *                               to register routes.
+   */
   public static void run(final Class<?> application, final String[] args) {
     Banner.print();
     ServiceLoader.load(ConfigInitializer.class).findFirst().ifPresent(initializer -> initializer.prepare(args));
@@ -50,10 +61,21 @@ public final class Iridium {
       final var message = exception.getMessage();
 
       log.error("Failed to start web server on {}:{}: {}", config.host(), config.port(), message);
+
       throw new IllegalStateException(message, exception);
     }
 
-    server.registerRoutes();
+    final var routeResult = server.registerRoutes();
+
+    if (routeResult.isErr()) {
+      final var exception = routeResult.unwrapErr();
+      final var message = exception.getMessage();
+
+      log.error("Failed to register routes: {}", message);
+
+      throw new IllegalStateException(message, exception);
+    }
+
     log.info("Iridium application listening on http://localhost:{}", config.port());
 
     Runtime.getRuntime().addShutdownHook(new Thread(server::stop, "iridium-shutdown"));

@@ -8,6 +8,7 @@ import com.io7m.jodist.TypeName;
 import com.io7m.jodist.TypeSpec;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.html.Html;
+import cc.asylum.iridium.core.util.Strings;
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.validation.ConstraintViolation;
 import cc.asylum.iridium.core.validation.Escaper;
@@ -48,8 +49,10 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,7 +112,7 @@ public final class ValidatorWriter {
       final TypeElement owner,
       final String name
   ) {
-    final String cap = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+    final String cap = Strings.capitalize(name);
     for (final Element enclosed : owner.getEnclosedElements()) {
       if (enclosed.getKind() == ElementKind.METHOD
           && enclosed.getSimpleName().contentEquals("get" + cap)
@@ -143,6 +146,13 @@ public final class ValidatorWriter {
         violationList
     );
 
+    final Map<String, String> patterns = patternFields(fields);
+    for (final Map.Entry<String, String> pattern : patterns.entrySet()) {
+      template.addField(com.io7m.jodist.FieldSpec.builder(java.util.regex.Pattern.class, pattern.getKey(), Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+          .initializer("java.util.regex.Pattern.compile($S)", pattern.getValue())
+          .build());
+    }
+
     final MethodSpec.Builder validate = MethodSpec.methodBuilder("validate")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
@@ -159,7 +169,7 @@ public final class ValidatorWriter {
         );
 
     for (final ValidatedField field : fields) {
-      generateChecks(validate, field);
+      generateChecks(validate, field, patterns);
     }
 
     validate.addStatement("if (violations.isEmpty()) { return $T.ok(value); }", Result.class)
@@ -215,9 +225,35 @@ public final class ValidatorWriter {
         .build();
   }
 
+  private static String patternField(final Map<String, String> patterns, final String regexp) {
+    for (final Map.Entry<String, String> entry : patterns.entrySet()) {
+      if (entry.getValue().equals(regexp)) {
+        return entry.getKey();
+      }
+    }
+    throw new IllegalStateException(regexp);
+  }
+
+  private Map<String, String> patternFields(final List<ValidatedField> fields) {
+    final Map<String, String> patterns = new LinkedHashMap<>();
+    int index = 0;
+    for (final ValidatedField field : fields) {
+      final Pattern pattern = field.element().getAnnotation(Pattern.class);
+      if (pattern != null) {
+        patterns.put("PATTERN_" + index, pattern.regexp());
+      }
+      if (field.element().getAnnotation(Email.class) != null) {
+        patterns.put("EMAIL_" + index, EMAIL_REGEX);
+      }
+      index++;
+    }
+    return patterns;
+  }
+
   private void generateChecks(
       final MethodSpec.Builder b,
-      final ValidatedField field
+      final ValidatedField field,
+      final Map<String, String> patterns
   ) {
     final Element element = field.element();
     final String acc = field.accessor();
@@ -308,11 +344,12 @@ public final class ValidatorWriter {
 
     final Pattern pattern = element.getAnnotation(Pattern.class);
     if (pattern != null) {
+      final String fieldName = patternField(patterns, pattern.regexp());
       b.addStatement(
-          "if ($L != null && !$L.matches($S)) { violations.add(new $T($S, $S, $L)); }",
+          "if ($L != null && !$N.matcher($L).matches()) { violations.add(new $T($S, $S, $L)); }",
           acc,
+          fieldName,
           acc,
-          pattern.regexp(),
           ConstraintViolation.class,
           name,
           "must match " + pattern.regexp(),
@@ -321,11 +358,12 @@ public final class ValidatorWriter {
     }
 
     if (element.getAnnotation(Email.class) != null) {
+      final String fieldName = patternField(patterns, EMAIL_REGEX);
       b.addStatement(
-          "if ($L != null && !$L.matches($S)) { violations.add(new $T($S, $S, $L)); }",
+          "if ($L != null && !$N.matcher($L).matches()) { violations.add(new $T($S, $S, $L)); }",
           acc,
+          fieldName,
           acc,
-          EMAIL_REGEX,
           ConstraintViolation.class,
           name,
           "must be a valid email address",

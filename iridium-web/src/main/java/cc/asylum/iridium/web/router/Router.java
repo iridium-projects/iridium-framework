@@ -2,6 +2,7 @@ package cc.asylum.iridium.web.router;
 
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.bean.BeanPool;
+import cc.asylum.iridium.core.util.Paths;
 import cc.asylum.iridium.core.component.Component;
 import cc.asylum.iridium.web.webserver.WebRegistrar;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import cc.asylum.iridium.web.middleware.Middleware;
 import cc.asylum.iridium.web.middleware.MiddlewareChain;
 import cc.asylum.iridium.web.response.Response;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,41 +23,143 @@ import java.util.ServiceLoader;
 @Component
 public final class Router {
 
-  private final List<Route> routes = new ArrayList<>();
-  private final List<MiddlewareRegistration> middlewares = new ArrayList<>();
+  public static final Map<String, String> NO_VARIABLES = Map.of();
 
-  public void register(final String method, final String path, final Handler handler) {
-    routes.add(new Route(method, normalize(path), handler));
+  private final List<Route> routes = new ArrayList<>();
+  private final Map<String, List<Route>> byMethod = new HashMap<>();
+  private final Map<String, Route> exact = new HashMap<>();
+  private final List<Middleware> middlewares = new ArrayList<>();
+
+  private List<Middleware> chain;
+
+  public void register(
+      final String method,
+      final String path,
+      final Handler handler) {
+    final Route route = new Route(
+        method,
+        Paths.normalize(path),
+        handler);
+
+    routes.add(route);
+
+    byMethod.computeIfAbsent(route.method(), ignored -> new ArrayList<>())
+        .add(route);
+
+    if (route.exact()) {
+      exact.put(route.method() + " " + route.path(), route);
+    }
+  }
+
+  private static String stripQuery(final String path) {
+    if (path == null) {
+      return "/";
+    }
+
+    final int query = path.indexOf('?');
+    return query < 0 ? path : path.substring(0, query);
   }
 
   public void use(final Middleware middleware) {
-    middlewares.add(new MiddlewareRegistration(middleware, middleware.priority()));
+    middlewares.add(middleware);
+    chain = null;
+  }
+
+  public boolean readsBody(final String method, final String path) {
+    final Route route = exact.get(Request.normalizeMethod(method) + " " + Paths.normalize(stripQuery(path)));
+    return route != null && route.readsBody();
   }
 
   public Response<?> dispatch(final Request request) throws Exception {
+    final String method = Request.normalizeMethod(request.method());
+    final String path = Paths.normalize(stripQuery(request.path()));
+    final Route exactRoute = exact.get(method + " " + path);
+
+    if (exactRoute != null) {
+      return invoke(request, exactRoute);
+    }
+
+    final List<Route> routes = byMethod.get(method);
+
+    if (routes == null) {
+      return Response.notFound().build();
+    }
+
+    final String[] segments = request.segments() != null
+        ? request.segments()
+        : Request.split(path);
+
     for (final Route route : routes) {
-      if (!route.method.equalsIgnoreCase(request.method())) {
+      if (route.exact()) {
         continue;
       }
-      final Map<String, String> variables = route.match(request.path());
+      final Map<String, String> variables = route.match(segments);
+
       if (variables == null) {
         continue;
       }
-      return invoke(request.withPathVariables(variables), route.handler());
+
+      final Request matched = variables == NO_VARIABLES
+          ? request
+          : request.withPathVariables(variables);
+
+      return invoke(matched, route);
     }
+
     return Response.notFound().build();
   }
 
-  private Response<?> invoke(final Request request, final Handler terminal) throws Exception {
-    final List<Middleware> chain = middlewares.stream()
-        .sorted(Comparator.comparingInt(MiddlewareRegistration::priority))
-        .map(MiddlewareRegistration::middleware)
-        .toList();
+  private static byte[] readBody(final Request request) throws Exception {
+    final InputStream input = request.input();
+
+    if (input == null) {
+      return new byte[0];
+    }
+
+    final var bytes = input.readAllBytes();
+    input.close();
+
+    return bytes;
+
+  }
+
+  private Response<?> invoke(
+      final Request request,
+      final Route route) throws Exception {
+    Request matched = request;
+
+    if (route.readsBody() && matched.body() == null) {
+      matched = matched.withBody(readBody(matched));
+    }
+
+    return invoke(matched, route.handler());
+  }
+
+  private Response<?> invoke(
+      final Request request,
+      final Handler terminal) throws Exception {
+    final List<Middleware> chain = middlewareChain();
+
+    if (chain.isEmpty()) {
+      return terminal.handle(request);
+    }
+
     return new MiddlewareChain(chain, terminal).invoke(request);
+  }
+
+  private List<Middleware> middlewareChain() {
+    if (chain == null) {
+      chain = middlewares.stream()
+          .sorted(Comparator.comparingInt(Middleware::priority))
+          .toList();
+    }
+
+    return chain;
   }
 
   public static Router load() {
     BeanPool.initialize();
+
     final Router router = new Router();
 
     for (final WebRegistrar registrar : ServiceLoader.load(WebRegistrar.class)) {
@@ -63,59 +167,5 @@ public final class Router {
     }
 
     return router;
-  }
-
-  private record MiddlewareRegistration(Middleware middleware, int priority) {
-  }
-
-  public static final class Route {
-
-    private final String method;
-    private final String path;
-    private final String[] segments;
-    private final Handler handler;
-
-    private Route(final String method, final String path, final Handler handler) {
-      this.method = method;
-      this.path = path;
-      this.segments = path.split("/");
-      this.handler = handler;
-    }
-
-    public String method() {
-      return method;
-    }
-
-    public String path() {
-      return path;
-    }
-
-    public Handler handler() {
-      return handler;
-    }
-
-    private Map<String, String> match(final String requestPath) {
-      final String[] actual = requestPath.split("/");
-      if (segments.length != actual.length) {
-        return null;
-      }
-      final Map<String, String> variables = new HashMap<>();
-      for (int i = 0; i < segments.length; i++) {
-        final String segment = segments[i];
-        if (segment.startsWith("{") && segment.endsWith("}")) {
-          variables.put(segment.substring(1, segment.length() - 1), actual[i]);
-        } else if (!segment.equals(actual[i])) {
-          return null;
-        }
-      }
-      return variables;
-    }
-  }
-
-  private static String normalize(final String path) {
-    if (path == null || path.isEmpty()) {
-      return "/";
-    }
-    return path.startsWith("/") ? path : "/" + path;
   }
 }

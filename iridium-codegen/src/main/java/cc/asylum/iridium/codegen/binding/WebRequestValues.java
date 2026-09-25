@@ -1,6 +1,7 @@
 package cc.asylum.iridium.codegen.binding;
 
 import cc.asylum.iridium.core.annotation.Internal;
+import cc.asylum.iridium.core.util.Strings;
 import cc.asylum.iridium.web.controller.Parameters;
 import cc.asylum.iridium.web.response.Response;
 
@@ -13,12 +14,12 @@ public final class WebRequestValues implements RequestValues {
   @Override
   public String one(final boolean header, final String name, final String fallback) {
     return PARAMETERS + (header ? ".header" : ".query")
-        + "(_request, " + quote(name) + ", " + fallback + ")";
+        + "(_request, " + Strings.quote(name) + ", " + fallback + ")";
   }
 
   @Override
   public String many(final boolean header, final String name) {
-    return PARAMETERS + (header ? ".headers" : ".queries") + "(_request, " + quote(name) + ")";
+    return PARAMETERS + (header ? ".headers" : ".queries") + "(_request, " + Strings.quote(name) + ")";
   }
 
   @Override
@@ -29,10 +30,4 @@ public final class WebRequestValues implements RequestValues {
     return RESPONSE + ".badRequest().body(\"Invalid value '\" + " + rawVariable + " + \"' for '" + param + "'\")";
   }
 
-  private static String quote(final String value) {
-    return "\"" + value
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        + "\"";
-  }
 }

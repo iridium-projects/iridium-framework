@@ -2,6 +2,8 @@ package cc.asylum.iridium.web.openapi;
 
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.bean.BeanPool;
+import cc.asylum.iridium.core.util.Paths;
+import cc.asylum.iridium.core.util.Strings;
 import cc.asylum.iridium.web.openapi.config.OpenAPIConfig;
 import cc.asylum.iridium.web.openapi.service.OpenAPIService;
 import cc.asylum.iridium.web.response.Response;
@@ -18,24 +20,33 @@ public final class OpenAPIWebRegistrar implements WebRegistrar {
     final OpenAPIService service = new OpenAPIService();
     final String uiPath = config.path();
     final String specPath = specPath(uiPath);
+    final String ui = swaggerUi(specPath);
+    final String[] spec = new String[1];
 
     router.register("GET", uiPath, request -> Response.ok()
         .header("Content-Type", "text/html; charset=utf-8")
-        .body(swaggerUi(specPath)));
+        .body(ui));
 
-    router.register("GET", specPath, request -> Response.ok()
-        .header("Content-Type", "application/json")
-        .body(Json.pretty(service.buildOpenAPI(config, router))));
+    router.register("GET", specPath, request -> {
+      if (spec[0] == null) {
+        spec[0] = Json.pretty(service.buildOpenAPI(config, router));
+      }
+
+      return Response.ok()
+          .header("Content-Type", "application/json")
+          .body(spec[0]);
+    });
   }
 
-  static String specPath(final String path) {
-    if (path == null || path.isBlank() || "/".equals(path)) {
+  private String specPath(final String path) {
+    if (Strings.blank(path) || "/".equals(path)) {
       return "/openapi.json";
     }
-    return path.endsWith("/") ? path + "openapi.json" : path + "/openapi.json";
+
+    return Paths.normalize(path) + "/openapi.json";
   }
 
-  static String swaggerUi(final String specPath) {
+  private String swaggerUi(final String specPath) {
     return """
         <!DOCTYPE html>
         <html lang="en">

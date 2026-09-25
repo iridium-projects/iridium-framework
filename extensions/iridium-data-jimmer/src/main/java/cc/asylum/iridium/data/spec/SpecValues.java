@@ -1,5 +1,7 @@
 package cc.asylum.iridium.data.spec;
 
+import cc.asylum.iridium.core.util.Strings;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -10,7 +12,6 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 public final class SpecValues {
@@ -19,10 +20,7 @@ public final class SpecValues {
   }
 
   public static String text(final String raw) {
-    if (raw == null || raw.isBlank()) {
-      return null;
-    }
-    return raw.trim();
+    return Strings.blank(raw) ? null : raw.trim();
   }
 
   public static List<String> parts(final List<String> raw) {
@@ -34,25 +32,20 @@ public final class SpecValues {
       if (item == null) {
         continue;
       }
-      for (final String part : item.split(",", -1)) {
-        final String trimmed = part.trim();
-        if (!trimmed.isEmpty()) {
-          values.add(trimmed);
-        }
-      }
+      values.addAll(Strings.split(item, ','));
     }
     return values;
   }
 
   public static Boolean truthy(final String raw) {
-    if (raw == null || raw.isBlank()) {
+    if (Strings.blank(raw)) {
       return null;
     }
-    return switch (raw.trim().toLowerCase(Locale.ROOT)) {
-      case "true", "yes", "on", "1" -> true;
-      case "false", "no", "off", "0" -> false;
-      default -> throw new IllegalArgumentException(raw);
-    };
+    final Boolean parsed = Strings.truthy(raw);
+    if (parsed == null) {
+      throw new IllegalArgumentException(raw);
+    }
+    return parsed;
   }
 
   public static Integer integer(final String raw) {
@@ -120,7 +113,7 @@ public final class SpecValues {
   }
 
   public static <E extends Enum<E>> E enumeration(final String raw, final Class<E> type) {
-    if (raw == null || raw.isBlank()) {
+    if (Strings.blank(raw)) {
       return null;
     }
     try {
@@ -188,7 +181,7 @@ public final class SpecValues {
   }
 
   private static <T> T parse(final String raw, final java.util.function.Function<String, T> parser) {
-    if (raw == null || raw.isBlank()) {
+    if (Strings.blank(raw)) {
       return null;
     }
     try {

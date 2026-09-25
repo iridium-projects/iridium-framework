@@ -8,25 +8,32 @@ import java.util.ServiceLoader;
 public final class Validation {
 
   private static final ValidatorRegistry REGISTRY = new ValidatorRegistry();
-  private static boolean initialized = false;
+  private static volatile boolean initialized = false;
 
   private Validation() {
   }
 
-  public static synchronized void reset() {
-    REGISTRY.clear();
-    initialized = false;
+  public static void reset() {
+    synchronized (Validation.class) {
+      REGISTRY.clear();
+      initialized = false;
+    }
   }
 
-  public static synchronized void initialize() {
+  public static void initialize() {
     if (initialized) {
       return;
     }
-    REGISTRY.clear();
-    for (final ValidationRegistrar registrar : ServiceLoader.load(ValidationRegistrar.class)) {
-      registrar.register(REGISTRY);
+    synchronized (Validation.class) {
+      if (initialized) {
+        return;
+      }
+      REGISTRY.clear();
+      for (final ValidationRegistrar registrar : ServiceLoader.load(ValidationRegistrar.class)) {
+        registrar.register(REGISTRY);
+      }
+      initialized = true;
     }
-    initialized = true;
   }
 
   @SuppressWarnings("unchecked")
@@ -45,6 +52,7 @@ public final class Validation {
     return validator.validate(value);
   }
 
+  @SuppressWarnings("unchecked")
   public static <T> T escape(final T value) {
     initialize();
 
@@ -55,7 +63,6 @@ public final class Validation {
     final Validator<T> validator = REGISTRY.get((Class<T>) value.getClass());
 
     if (validator instanceof final Escaper<?> escaper) {
-      @SuppressWarnings("unchecked")
       final Escaper<T> typed = (Escaper<T>) escaper;
       return typed.escape(value);
     }

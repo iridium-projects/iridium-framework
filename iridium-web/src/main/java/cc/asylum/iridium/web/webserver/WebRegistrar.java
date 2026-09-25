@@ -6,5 +6,5 @@ import cc.asylum.iridium.web.router.Router;
 @Internal
 public interface WebRegistrar {
 
-    void register(final Router router);
+  void register(final Router router);
 }

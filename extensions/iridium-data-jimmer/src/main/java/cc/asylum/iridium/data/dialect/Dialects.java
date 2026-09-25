@@ -11,6 +11,8 @@ import org.babyfish.jimmer.sql.dialect.SQLiteDialect;
 import org.babyfish.jimmer.sql.dialect.SqlServerDialect;
 import org.babyfish.jimmer.sql.dialect.TiDBDialect;
 
+import cc.asylum.iridium.core.util.Strings;
+
 import java.util.Locale;
 
 public enum Dialects {
@@ -39,7 +41,7 @@ public enum Dialects {
   }
 
   public static Dialects parse(final String raw) {
-    if (raw == null || raw.isBlank()) {
+    if (Strings.blank(raw)) {
       throw new IllegalArgumentException("Dialect must not be blank");
     }
 

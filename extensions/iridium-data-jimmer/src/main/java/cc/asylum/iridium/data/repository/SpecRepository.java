@@ -1,5 +1,6 @@
 package cc.asylum.iridium.data.repository;
 
+import cc.asylum.iridium.core.util.Lists;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.query.ConfigurableRootQuery;
 import org.babyfish.jimmer.sql.ast.query.MutableRootQuery;
@@ -33,7 +34,7 @@ public abstract class SpecRepository<E, ID> extends CrudRepository<E, ID> {
   public E findOne(final JSpecification<E, ?> specification) {
     final List<E> rows = findAll(specification, 1, 0L);
 
-    return rows.isEmpty() ? null : rows.get(0);
+    return Lists.first(rows);
   }
 
   public long count(final JSpecification<E, ?> specification) {
@@ -56,12 +57,7 @@ public abstract class SpecRepository<E, ID> extends CrudRepository<E, ID> {
       throw new IllegalArgumentException("page must be >= 0 and size must be > 0");
     }
 
-    return new Page<>(
-        findAll(specification, size, (long) page * size),
-        page,
-        size,
-        count(specification)
-    );
+    return select(specification).fetchPage(page, size, (rows, total, source) -> new Page<>(rows, page, size, total));
   }
 
   private ConfigurableRootQuery<TableProxy<E>, E> select(final JSpecification<E, ?> specification) {

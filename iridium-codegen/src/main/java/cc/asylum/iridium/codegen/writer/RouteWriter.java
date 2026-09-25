@@ -16,12 +16,14 @@ import cc.asylum.iridium.codegen.support.ModelSupport;
 import cc.asylum.iridium.codegen.support.TypeSupport;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.bean.BeanPool;
+import cc.asylum.iridium.core.util.Paths;
 import cc.asylum.iridium.core.validation.Valid;
 import cc.asylum.iridium.core.validation.Validation;
 import cc.asylum.iridium.web.controller.Parameters;
 import cc.asylum.iridium.web.controller.RestController;
 import cc.asylum.iridium.web.controller.mapping.HttpMapping;
 import cc.asylum.iridium.web.controller.parameter.RequestBinding;
+import cc.asylum.iridium.web.controller.parameter.RequestBody;
 import cc.asylum.iridium.web.response.Response;
 import cc.asylum.iridium.web.router.Handler;
 import cc.asylum.iridium.web.router.Request;
@@ -55,21 +57,17 @@ public final class RouteWriter {
 
   private final Types types;
   private final Elements elements;
-  private final Messager messager;
   private final List<ParameterBinder> binders;
 
   public RouteWriter(
       final Types types,
       final Elements elements,
-      final Messager messager
-  ) {
+      final Messager messager) {
     this.types = types;
     this.elements = elements;
-    this.messager = messager;
     this.binders = ServiceLoader.load(
         ParameterBinderFactory.class,
-        ParameterBinderFactory.class.getClassLoader()
-    ).stream()
+        ParameterBinderFactory.class.getClassLoader()).stream()
         .map(provider -> provider.get().create(types, elements, messager, new WebRequestValues()))
         .toList();
   }
@@ -79,10 +77,13 @@ public final class RouteWriter {
 
   public Optional<MethodMapping> mappingOf(final ExecutableElement method) {
     final HttpMapping mapping = MirrorSupport.metaAnnotation(method, HttpMapping.class);
+
     if (mapping == null) {
       return Optional.empty();
     }
+
     final AnnotationMirror mirror = MirrorSupport.annotationWithMeta(method, HttpMapping.class);
+
     return Optional.of(new MethodMapping(mapping.method(), MirrorSupport.stringMember(mirror, "value", "")));
   }
 
@@ -91,27 +92,7 @@ public final class RouteWriter {
   }
 
   public static String resolvePath(final String prefix, final String path) {
-    final String head = trimSlashes(prefix);
-    final String tail = trimSlashes(path);
-    if (head.isEmpty()) {
-      return tail.isEmpty() ? "/" : "/" + tail;
-    }
-    return tail.isEmpty() ? "/" + head : "/" + head + "/" + tail;
-  }
-
-  private static String trimSlashes(final String value) {
-    if (value == null) {
-      return "";
-    }
-    int start = 0;
-    int end = value.length();
-    while (start < end && value.charAt(start) == '/') {
-      start++;
-    }
-    while (end > start && value.charAt(end - 1) == '/') {
-      end--;
-    }
-    return value.substring(start, end);
+    return Paths.join(prefix, path);
   }
 
   public CodeBlock beanLookupPool() {
@@ -120,12 +101,10 @@ public final class RouteWriter {
 
   public Optional<TypeSpec> routeHandler(
       final TypeElement controller,
-      final ExecutableElement method
-  ) {
+      final ExecutableElement method) {
     final TypeName responseWildcard = ParameterizedTypeName.get(
         RESPONSE,
-        WildcardTypeName.subtypeOf(TypeName.OBJECT)
-    );
+        WildcardTypeName.subtypeOf(TypeName.OBJECT));
     final MethodSpec.Builder handle = MethodSpec.methodBuilder("handle")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
@@ -133,8 +112,15 @@ public final class RouteWriter {
         .addException(Exception.class)
         .returns(responseWildcard);
 
+    final ClassName controllerType = ClassName.get(controller);
+    handle.addStatement("final $T _controller = this.controller", controllerType);
+
     final List<String> arguments = new ArrayList<>();
+    boolean readsBody = false;
     for (final VariableElement parameter : method.getParameters()) {
+      if (readsBody(parameter)) {
+        readsBody = true;
+      }
       final Optional<String> argument = emitBinding(handle, parameter);
       if (argument.isEmpty()) {
         return Optional.empty();
@@ -146,23 +132,41 @@ public final class RouteWriter {
     }
 
     handle.addStatement(
-        "return $T.instance().< $T >get($T.class).$N($L)",
-        BEAN_POOL,
-        ClassName.get(controller),
-        ClassName.get(controller),
+        "return _controller.$N($L)",
         method.getSimpleName().toString(),
-        String.join(", ", arguments)
-    );
-    return Optional.of(TypeSpec.anonymousClassBuilder("")
+        String.join(", ", arguments));
+
+    final TypeSpec.Builder handler = TypeSpec.anonymousClassBuilder("")
         .addSuperinterface(HANDLER)
-        .addMethod(handle.build())
-        .build());
+        .addField(controllerType, "controller", Modifier.PRIVATE, Modifier.FINAL)
+        .addInitializerBlock(CodeBlock.of("controller = $T.instance().get($T.class);", BEAN_POOL, controllerType))
+        .addMethod(handle.build());
+    if (readsBody) {
+      handler.addMethod(MethodSpec.methodBuilder("readsBody")
+          .addAnnotation(Override.class)
+          .addModifiers(Modifier.PUBLIC)
+          .returns(boolean.class)
+          .addStatement("return true")
+          .build());
+    }
+    return Optional.of(handler.build());
+  }
+
+  private boolean readsBody(final VariableElement parameter) {
+    if (parameter.getAnnotation(RequestBody.class) != null) {
+      return true;
+    }
+    final AnnotationMirror bindingMirror = MirrorSupport.annotationWithMeta(parameter, RequestBinding.class);
+    if (bindingMirror == null) {
+      return false;
+    }
+    final RequestBinding binding = bindingMirror.getAnnotationType().asElement().getAnnotation(RequestBinding.class);
+    return binding != null && binding.value() == RequestBinding.Source.BODY;
   }
 
   private Optional<String> emitBinding(
       final MethodSpec.Builder handle,
-      final VariableElement parameter
-  ) {
+      final VariableElement parameter) {
     final TypeMirror type = parameter.asType();
     final String typeName = type.toString();
     final String name = parameter.getSimpleName().toString();
@@ -196,7 +200,7 @@ public final class RouteWriter {
     final String bindingName = MirrorSupport.stringMember(bindingMirror, "value", name);
 
     if (source == RequestBinding.Source.BODY) {
-      return Optional.of(emitBody(handle, type, name, binding == null || required));
+      return Optional.ofNullable(emitBody(handle, type, name, binding == null || required));
     }
 
     if (!defaultValue.isEmpty()) {
@@ -204,8 +208,7 @@ public final class RouteWriter {
           "$L $L = $L",
           typeName,
           name,
-          convertExpression(type, rawExpr(source, bindingName, defaultValue))
-      );
+          convertExpression(type, rawExpr(source, bindingName, defaultValue)));
       return Optional.of(name);
     }
 
@@ -216,8 +219,7 @@ public final class RouteWriter {
           "if ($L == null) { return $T.badRequest().body($S); }",
           rawVar,
           RESPONSE,
-          "Missing required " + label(source) + " '" + bindingName + "'"
-      );
+          "Missing required " + label(source) + " '" + bindingName + "'");
       if (!emitConversion(handle, type, name, rawVar, typeName, bindingName)) {
         return Optional.empty();
       }
@@ -235,22 +237,19 @@ public final class RouteWriter {
       final MethodSpec.Builder handle,
       final TypeMirror type,
       final String name,
-      final boolean required
-  ) {
+      final boolean required) {
     final boolean optional = TypeSupport.optionalValueType(types, type).isPresent();
     if (required && !optional) {
       final String rawVar = name + "Raw";
       handle.addStatement(
-          "java.lang.String $L = $L",
+          "byte[] $L = $L",
           rawVar,
-          rawExpr(RequestBinding.Source.BODY, name, null)
-      );
+          rawExpr(RequestBinding.Source.BODY, name, null));
       handle.addStatement(
           "if ($L == null) { return $T.badRequest().body($S); }",
           rawVar,
           RESPONSE,
-          "Missing required request body"
-      );
+          "Missing required request body");
       if (!emitConversion(handle, type, name, rawVar, type.toString(), "request body")) {
         return null;
       }
@@ -261,22 +260,25 @@ public final class RouteWriter {
         "$L $L = $L",
         type.toString(),
         name,
-        convertExpression(type, rawExpr(RequestBinding.Source.BODY, name, null))
-    );
+        convertExpression(type, rawExpr(RequestBinding.Source.BODY, name, null)));
     return name;
+  }
+
+  private String bodyExpr(final String name) {
+    return PARAMETERS + ".bodyBytes(_request)";
   }
 
   private String rawExpr(
       final RequestBinding.Source source,
       final String name,
-      final String defaultValue
-  ) {
+      final String defaultValue) {
     final String value = defaultValue == null ? "null" : "\"" + defaultValue + "\"";
+
     return switch (source) {
       case PATH -> PARAMETERS + ".pathVariable(_request, \"" + name + "\", " + value + ")";
       case HEADER -> PARAMETERS + ".header(_request, \"" + name + "\", " + value + ")";
       case COOKIE -> PARAMETERS + ".cookie(_request, \"" + name + "\", " + value + ")";
-      case BODY -> PARAMETERS + ".body(_request)";
+      case BODY -> bodyExpr(name);
       default -> PARAMETERS + ".query(_request, \"" + name + "\", " + value + ")";
     };
   }
@@ -295,8 +297,7 @@ public final class RouteWriter {
       final String name,
       final String rawVar,
       final String typeName,
-      final String label
-  ) {
+      final String label) {
     handle.addStatement("$L $L", typeName, name);
     handle.addCode("try {\n$>");
     handle.addStatement("$L = $L", name, convertExpression(type, rawVar));
@@ -308,8 +309,11 @@ public final class RouteWriter {
 
   String convertExpression(
       final TypeMirror type,
-      final String raw
-  ) {
+      final String raw) {
+    if (raw.endsWith("Raw") && !TypeSupport.isString(types, type) && !type.getKind().isPrimitive()
+        && !TypeSupport.isBoxed(TypeSupport.qualifiedName(types, type))) {
+      return convertBody(type, raw);
+    }
     if (type.getKind().isPrimitive()) {
       return switch (type.getKind()) {
         case BOOLEAN -> "Boolean.parseBoolean(" + raw + ")";
@@ -337,10 +341,19 @@ public final class RouteWriter {
     };
   }
 
+  private String convertBody(final TypeMirror type, final String raw) {
+    if (type.getKind() == TypeKind.ARRAY && "byte[]".equals(type.toString())) {
+      return raw;
+    }
+    if ("java.lang.String".equals(TypeSupport.qualifiedName(types, type))) {
+      return PARAMETERS + ".text(" + raw + ")";
+    }
+    return "io.avaje.jsonb.Jsonb.instance().type(" + types.erasure(type) + ".class).fromJson(" + raw + ")";
+  }
+
   private String optionalWrapExpression(
       final TypeMirror inner,
-      final String raw
-  ) {
+      final String raw) {
     return switch (TypeSupport.qualifiedName(types, inner)) {
       case "java.lang.String" -> "java.util.Optional.ofNullable(" + raw + ")";
       case "java.lang.Long" -> "java.util.Optional.ofNullable(" + raw + ").map(java.lang.Long::parseLong)";
