@@ -27,6 +27,7 @@ public final class Router {
 
   private final List<Route> routes = new ArrayList<>();
   private final Map<String, List<Route>> byMethod = new HashMap<>();
+  private final Map<String, Route> exact = new HashMap<>();
   private final List<Middleware> middlewares = new ArrayList<>();
 
   private List<Middleware> chain;
@@ -44,6 +45,19 @@ public final class Router {
 
     byMethod.computeIfAbsent(route.method(), ignored -> new ArrayList<>())
         .add(route);
+
+    if (route.exact()) {
+      exact.put(route.method() + " " + route.path(), route);
+    }
+  }
+
+  private static String stripQuery(final String path) {
+    if (path == null) {
+      return "/";
+    }
+
+    final int query = path.indexOf('?');
+    return query < 0 ? path : path.substring(0, query);
   }
 
   public void use(final Middleware middleware) {
@@ -51,8 +65,20 @@ public final class Router {
     chain = null;
   }
 
+  public boolean readsBody(final String method, final String path) {
+    final Route route = exact.get(Request.normalizeMethod(method) + " " + Paths.normalize(stripQuery(path)));
+    return route != null && route.readsBody();
+  }
+
   public Response<?> dispatch(final Request request) throws Exception {
     final String method = Request.normalizeMethod(request.method());
+    final String path = Paths.normalize(stripQuery(request.path()));
+    final Route exactRoute = exact.get(method + " " + path);
+
+    if (exactRoute != null) {
+      return invoke(request, exactRoute);
+    }
+
     final List<Route> routes = byMethod.get(method);
 
     if (routes == null) {
@@ -61,24 +87,23 @@ public final class Router {
 
     final String[] segments = request.segments() != null
         ? request.segments()
-        : Request.split(request.path());
+        : Request.split(path);
 
     for (final Route route : routes) {
+      if (route.exact()) {
+        continue;
+      }
       final Map<String, String> variables = route.match(segments);
 
       if (variables == null) {
         continue;
       }
 
-      Request matched = variables == NO_VARIABLES
+      final Request matched = variables == NO_VARIABLES
           ? request
           : request.withPathVariables(variables);
 
-      if (route.readsBody() && matched.body() == null) {
-        matched = matched.withBody(readBody(matched));
-      }
-
-      return invoke(matched, route.handler());
+      return invoke(matched, route);
     }
 
     return Response.notFound().build();
@@ -96,6 +121,18 @@ public final class Router {
 
     return bytes;
 
+  }
+
+  private Response<?> invoke(
+      final Request request,
+      final Route route) throws Exception {
+    Request matched = request;
+
+    if (route.readsBody() && matched.body() == null) {
+      matched = matched.withBody(readBody(matched));
+    }
+
+    return invoke(matched, route.handler());
   }
 
   private Response<?> invoke(

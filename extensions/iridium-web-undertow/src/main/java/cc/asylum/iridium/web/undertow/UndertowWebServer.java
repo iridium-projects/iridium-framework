@@ -3,7 +3,6 @@ package cc.asylum.iridium.web.undertow;
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.result.Unit;
-import cc.asylum.iridium.core.util.Strings;
 import cc.asylum.iridium.web.response.ResponseWriter;
 import cc.asylum.iridium.web.router.Request;
 import cc.asylum.iridium.web.router.Router;
@@ -18,7 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.util.concurrent.TimeUnit;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 @Internal
 public final class UndertowWebServer implements WebServer {
@@ -71,31 +71,32 @@ public final class UndertowWebServer implements WebServer {
   }
 
   private void handle(final HttpServerExchange exchange) {
-    if (exchange.isInIoThread()) {
+    if (exchange.isInIoThread() && needsWorker(exchange)) {
       exchange.dispatch(this::handle);
       return;
     }
-
-    final long start = System.nanoTime();
 
     try {
       final Request request = toRequest(exchange);
       final Response<?> response = router.dispatch(request);
 
       write(exchange, response);
-
-      LOG.debug("{} {} -> {} ({} ms)",
-          request.method(),
-          request.path(),
-          response.status(),
-          elapsedMillis(start));
-
     } catch (final RequestTooBigException tooLarge) {
       sendStatus(exchange, 413, "Payload Too Large");
     } catch (final Exception e) {
       LOG.error("Unhandled exception while processing {} {}", exchange.getRequestMethod(), exchange.getRequestURI(), e);
       sendError(exchange);
     }
+  }
+
+  private boolean needsWorker(final HttpServerExchange exchange) {
+    if (router == null) {
+      return true;
+    }
+
+    return router.readsBody(
+        exchange.getRequestMethod().toString(),
+        exchange.getRequestURI());
   }
 
   private Request toRequest(final HttpServerExchange exchange) {
@@ -108,7 +109,7 @@ public final class UndertowWebServer implements WebServer {
         () -> open(exchange));
   }
 
-  private static java.io.InputStream open(final HttpServerExchange exchange) {
+  private static InputStream open(final HttpServerExchange exchange) {
     exchange.setMaxEntitySize(MAX_ENTITY_SIZE);
     exchange.startBlocking();
     return exchange.getInputStream();
@@ -116,13 +117,14 @@ public final class UndertowWebServer implements WebServer {
 
   private void write(
       final HttpServerExchange exchange,
-      final Response<?> response) throws Exception {
+      final Response<?> response) {
     exchange.setStatusCode(response.status());
     response.headers().forEach((name, value) -> exchange.getResponseHeaders().put(new HttpString(name), value));
-
     exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, responseWriter.contentType(response));
-    exchange.startBlocking();
-    responseWriter.writeBody(response, exchange.getOutputStream());
+
+    final byte[] body = responseWriter.writeBody(response);
+    exchange.getResponseHeaders().put(Headers.CONTENT_LENGTH, body.length);
+    exchange.getResponseSender().send(ByteBuffer.wrap(body));
   }
 
   private void sendError(final HttpServerExchange exchange) {
@@ -133,13 +135,9 @@ public final class UndertowWebServer implements WebServer {
     try {
       exchange.setStatusCode(status);
       exchange.startBlocking();
-      exchange.getOutputStream().write(Strings.utf8(message));
+      exchange.getResponseSender().send(message);
     } catch (final Exception nested) {
       LOG.error("Failed to send error response", nested);
     }
-  }
-
-  private static long elapsedMillis(final long startNanos) {
-    return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
   }
 }
