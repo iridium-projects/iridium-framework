@@ -65,6 +65,11 @@ public final class Router {
     chain = null;
   }
 
+  public boolean readsBody(final String method, final String path) {
+    final Route route = exact.get(Request.normalizeMethod(method) + " " + Paths.normalize(stripQuery(path)));
+    return route != null && route.readsBody();
+  }
+
   public Response<?> dispatch(final Request request) throws Exception {
     final String method = Request.normalizeMethod(request.method());
     final String path = Paths.normalize(stripQuery(request.path()));

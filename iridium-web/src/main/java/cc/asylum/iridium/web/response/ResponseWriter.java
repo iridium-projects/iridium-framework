@@ -38,8 +38,12 @@ public final class ResponseWriter {
       if (header.getKey().equalsIgnoreCase("Content-Type")) {
         return header.getValue();
       }
-
     }
-    return "application/json";
+
+    return switch (response.body()) {
+      case final byte[] _ -> "application/octet-stream";
+      case final String _ -> "text/plain; charset=utf-8";
+      default -> "application/json";
+    };
   }
 }
