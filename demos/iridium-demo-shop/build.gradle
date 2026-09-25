@@ -1,0 +1,9 @@
+plugins {
+    id 'cc.asylum.iridium'
+}
+
+group = 'cc.asylum.iridium.demo.shop'
+
+application {
+    mainClass = 'cc.asylum.iridium.demo.shop.Application'
+}

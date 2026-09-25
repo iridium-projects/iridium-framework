@@ -25,6 +25,17 @@ public final class Iridium {
     this.config = config;
   }
 
+  /**
+   * Boostraps the application and blocks until the process is interrupted.
+   *
+   *
+   * @param application class annotated with {@link WebApplication}
+   * @param args        application arguments. Arguments are forwarded to
+   *                    configuration intialization
+   * @throws IllegalStateException if application lacks {@link WebApplication},
+   *                               bean intialization fails, or the server fails
+   *                               to register routes.
+   */
   public static void run(final Class<?> application, final String[] args) {
     Banner.print();
     ServiceLoader.load(ConfigInitializer.class).findFirst().ifPresent(initializer -> initializer.prepare(args));

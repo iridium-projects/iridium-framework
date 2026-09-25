@@ -14,6 +14,7 @@ public final class Route {
   private final boolean[] variables;
   private final Handler handler;
   private final boolean readsBody;
+  private final boolean exact;
 
   protected Route(final String method, final String path, final Handler handler) {
     this.method = Request.normalizeMethod(method);
@@ -23,6 +24,7 @@ public final class Route {
     this.variables = new boolean[segments.length];
     this.handler = handler;
     this.readsBody = handler.readsBody();
+    this.exact = !path.contains("{");
 
     for (int i = 0; i < segments.length; i++) {
       final String variable = Paths.variable(segments[i]);
@@ -50,6 +52,10 @@ public final class Route {
 
   public boolean readsBody() {
     return readsBody;
+  }
+
+  public boolean exact() {
+    return exact;
   }
 
   public Map<String, String> match(final String[] actual) {

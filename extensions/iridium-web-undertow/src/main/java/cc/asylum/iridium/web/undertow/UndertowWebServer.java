@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 @Internal
@@ -108,7 +109,7 @@ public final class UndertowWebServer implements WebServer {
         () -> open(exchange));
   }
 
-  private static java.io.InputStream open(final HttpServerExchange exchange) {
+  private static InputStream open(final HttpServerExchange exchange) {
     exchange.setMaxEntitySize(MAX_ENTITY_SIZE);
     exchange.startBlocking();
     return exchange.getInputStream();

@@ -9,6 +9,8 @@ public final class Response<T> {
   private final Map<String, String> headers;
   private final T body;
 
+  private static final Map<String, String> EMPTY = Map.of();
+
   private Response(
       final int status,
       final Map<String, String> headers,
@@ -35,7 +37,7 @@ public final class Response<T> {
   }
 
   public static <T> Response<T> ok(final T body) {
-    return status(200).body(body);
+    return new Response<T>(200, EMPTY, body);
   }
 
   public static BodyBuilder status(final int status) {

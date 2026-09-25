@@ -1,5 +1,8 @@
 package cc.asylum.iridium.web;
 
+import cc.asylum.iridium.core.annotation.Internal;
+
+@Internal
 public final class Banner {
 
   private static final String RESET = "\u001B[0m";
@@ -74,9 +77,11 @@ public final class Banner {
 
   private static int markWidth() {
     int width = 0;
+
     for (final String line : MARK) {
       width = Math.max(width, line.length());
     }
+
     return width;
   }
 
@@ -84,12 +89,15 @@ public final class Banner {
     if (x >= 20 && x <= 27 && y >= 5 && y <= 8) {
       return WHITE;
     }
+
     if (y <= 2) {
       return GRAY;
     }
+
     if (y >= 11) {
       return TEAL;
     }
+
     return x < 24 ? TEAL : GRAY;
   }
 }
