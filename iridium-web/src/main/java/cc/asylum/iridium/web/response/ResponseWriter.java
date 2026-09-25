@@ -41,6 +41,7 @@ public final class ResponseWriter {
     }
 
     return switch (response.body()) {
+      case null -> "text/plain";
       case final byte[] _ -> "application/octet-stream";
       case final String _ -> "text/plain; charset=utf-8";
       default -> "application/json";
