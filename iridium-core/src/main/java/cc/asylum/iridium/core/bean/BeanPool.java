@@ -39,7 +39,7 @@ public final class BeanPool {
         .toList();
 
     if (matches.isEmpty()) {
-      return null;
+      throw new IllegalStateException("No Bean found for type " + type.getName());
     }
 
     if (matches.size() > 1) {

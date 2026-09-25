@@ -1,5 +1,6 @@
 package cc.asylum.iridium.demo.hello;
 
+import cc.asylum.iridium.core.validation.Valid;
 import cc.asylum.iridium.web.controller.RestController;
 import cc.asylum.iridium.web.controller.mapping.GET;
 import cc.asylum.iridium.web.controller.mapping.POST;
@@ -28,7 +29,7 @@ public final class HelloController {
   }
 
   @POST("/echo")
-  public Response<String> echo(final @RequestBody String body) {
-    return Response.ok(body);
+  public Response<HelloDto> echo(final @RequestBody @Valid HelloDto helloDto) {
+    return Response.ok(helloDto);
   }
 }

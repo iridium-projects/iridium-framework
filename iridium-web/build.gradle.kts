@@ -9,5 +9,5 @@ repositories {
 
 dependencies() {
     api(project(":iridium-core"))
-    api(project(":iridium-json"))
+    api("io.avaje:avaje-jsonb:3.16")
 }

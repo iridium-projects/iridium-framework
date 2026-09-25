@@ -27,6 +27,7 @@ class IridiumPlugin : Plugin<Project> {
     }
     addDependencies(project)
     wireData(project)
+    wireJson(project)
 
     project.tasks.named("jar").configure {
       enabled = false
@@ -83,5 +84,9 @@ class IridiumPlugin : Plugin<Project> {
         project.dependencies.add("annotationProcessor", "org.babyfish.jimmer:jimmer-apt:$version")
       }
     }
+  }
+
+  private fun wireJson(project: Project) {
+    project.dependencies.add("annotationProcessor", "io.avaje:avaje-jsonb-generator:3.16")
   }
 }

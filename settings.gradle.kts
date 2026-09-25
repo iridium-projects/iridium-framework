@@ -11,7 +11,6 @@ rootProject.name = "iridium"
 include("iridium")
 include("iridium-core")
 include("iridium-web")
-include("iridium-json")
 include("iridium-codegen")
 include("iridium-config")
 include("iridium-tests")
@@ -27,7 +26,6 @@ fun demo(name: String) {
 }
 
 extension("iridium-web-undertow")
-extension("iridium-json-avaje")
 extension("iridium-log")
 extension("iridium-data-jimmer")
 extension("iridium-openapi")

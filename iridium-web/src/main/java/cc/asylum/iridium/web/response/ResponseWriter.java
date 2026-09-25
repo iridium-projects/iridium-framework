@@ -1,13 +1,13 @@
 package cc.asylum.iridium.web.response;
 
-import cc.asylum.iridium.json.Json;
+import io.avaje.jsonb.Jsonb;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public final class ResponseWriter {
 
-  private final Json json = Json.load();
+  private final Jsonb jsonb = Jsonb.instance();
 
   public byte[] writeBody(final Response<?> response) {
     final Object body = response.body();
@@ -16,7 +16,7 @@ public final class ResponseWriter {
       case null -> new byte[0];
       case final byte[] bytes -> bytes;
       case final String string -> string.getBytes(StandardCharsets.UTF_8);
-      default -> json.serializeBytes(body);
+      default -> jsonb.toJsonBytes(body);
     };
   }
 

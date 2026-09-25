@@ -47,6 +47,38 @@ class WebProcessorTest {
   }
 
   @Test
+  void validatesAnnotatedParameters() throws Exception {
+    final var result = ProcessorHarness.compile(Map.of(
+        "test.CreateRequest", """
+            package test;
+            import cc.asylum.iridium.core.validation.annotation.NotBlank;
+            public record CreateRequest(@NotBlank String name) {}
+            """,
+        "test.ValidFixture", """
+            package test;
+            import cc.asylum.iridium.core.validation.Valid;
+            import cc.asylum.iridium.web.controller.RestController;
+            import cc.asylum.iridium.web.controller.mapping.POST;
+            import cc.asylum.iridium.web.response.Response;
+            @RestController
+            public final class ValidFixture {
+              @POST("/items")
+              public Response<String> create(@Valid CreateRequest body) {
+                return Response.ok(body.name());
+              }
+            }
+            """), new WebProcessor());
+
+    assertTrue(result.success(), () -> String.join("\n", result.errors()));
+
+    final String registrar =
+        ProcessorHarness.generatedSource(result, "test", "gen", "WebRegistrarGenerated.java");
+    assertTrue(registrar.contains("Validation.validate(body)"), registrar);
+    assertTrue(registrar.contains("bodyChecked.isErr()"), registrar);
+    assertTrue(registrar.contains("Response.badRequest().body(bodyChecked.unwrapErr())"), registrar);
+  }
+
+  @Test
   void prependsControllerPrefixToMethodPaths() throws Exception {
     final var result = ProcessorHarness.compile(Map.of(
         "test.PrefixedFixture", """

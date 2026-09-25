@@ -5,7 +5,6 @@ import com.io7m.jodist.TypeName;
 import cc.asylum.iridium.codegen.writer.ConfigBinding;
 import cc.asylum.iridium.config.Value;
 import cc.asylum.iridium.core.annotation.Internal;
-import cc.asylum.iridium.core.inject.Inject;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -37,15 +36,13 @@ public final class ModelSupport {
 
   public static String packageOf(
       final Elements elements,
-      final Element element
-  ) {
+      final Element element) {
     return elements.getPackageOf(element).getQualifiedName().toString();
   }
 
   public static String generatedPackage(
       final Elements elements,
-      final Collection<? extends Element> origins
-  ) {
+      final Collection<? extends Element> origins) {
     final Set<String> packages = new LinkedHashSet<>();
     for (final Element origin : origins) {
       packages.add(packageOf(elements, origin));
@@ -64,8 +61,7 @@ public final class ModelSupport {
 
   public static String commonPrefix(
       final String a,
-      final String b
-  ) {
+      final String b) {
     final String[] left = a.split("\\.");
     final String[] right = b.split("\\.");
     final int length = Math.min(left.length, right.length);
@@ -85,8 +81,7 @@ public final class ModelSupport {
 
   public static List<TypeElement> rootTypes(
       final RoundEnvironment roundEnv,
-      final ElementKind... kinds
-  ) {
+      final ElementKind... kinds) {
     final Set<ElementKind> allowed = Set.of(kinds);
     final List<TypeElement> result = new ArrayList<>();
     for (final Element root : roundEnv.getRootElements()) {
@@ -100,8 +95,7 @@ public final class ModelSupport {
   public static <A extends Annotation> Set<TypeElement> annotatedTypes(
       final RoundEnvironment roundEnv,
       final Class<A> annotation,
-      final ElementKind kind
-  ) {
+      final ElementKind kind) {
     return roundEnv.getElementsAnnotatedWith(annotation).stream()
         .filter(element -> element.getKind() == kind)
         .map(TypeElement.class::cast)
@@ -110,8 +104,7 @@ public final class ModelSupport {
 
   public static <A extends Annotation> Set<ExecutableElement> annotatedMethods(
       final RoundEnvironment roundEnv,
-      final Class<A> annotation
-  ) {
+      final Class<A> annotation) {
     return roundEnv.getElementsAnnotatedWith(annotation).stream()
         .filter(element -> element.getKind() == ElementKind.METHOD)
         .map(ExecutableElement.class::cast)
@@ -119,35 +112,25 @@ public final class ModelSupport {
   }
 
   public static ExecutableElement resolveConstructor(final TypeElement type) {
-    final List<ExecutableElement> constructors = new ArrayList<>();
-    ExecutableElement annotated = null;
-    for (final Element enclosed : type.getEnclosedElements()) {
-      if (enclosed.getKind() == ElementKind.CONSTRUCTOR) {
-        final ExecutableElement constructor = (ExecutableElement) enclosed;
-        constructors.add(constructor);
-        if (constructor.getAnnotation(Inject.class) != null) {
-          annotated = constructor;
-        }
-      }
-    }
-    if (annotated != null) {
-      return annotated;
-    }
+    final List<ExecutableElement> constructors = type.getEnclosedElements()
+        .stream()
+        .filter(element -> element.getKind() == ElementKind.CONSTRUCTOR)
+        .map(ExecutableElement.class::cast)
+        .toList();
+
     return constructors.size() == 1 ? constructors.get(0) : null;
   }
 
   public static CodeBlock dependencyArgs(
       final ExecutableElement executable,
-      final BindingContext binding
-  ) {
+      final BindingContext binding) {
     return dependencyArgs(executable, CodeBlock.of("pool"), binding);
   }
 
   public static CodeBlock dependencyArgs(
       final ExecutableElement executable,
       final CodeBlock pool,
-      final BindingContext binding
-  ) {
+      final BindingContext binding) {
     final CodeBlock.Builder args = CodeBlock.builder();
     boolean first = true;
     if (executable != null) {

@@ -22,6 +22,8 @@ class BeanProcessorTest {
         "test.TestFactory", """
             package test;
             import cc.asylum.iridium.core.bean.Bean;
+            import cc.asylum.iridium.core.component.Component;
+            @Component
             public final class TestFactory {
               @Bean
               public TestService service() {
@@ -31,7 +33,9 @@ class BeanProcessorTest {
             """,
         "test.TestHooks", """
             package test;
+            import cc.asylum.iridium.core.component.Component;
             import cc.asylum.iridium.core.hook.OnShutdown;
+            @Component
             public final class TestHooks {
               @OnShutdown
               public void stop() {
@@ -53,7 +57,7 @@ class BeanProcessorTest {
     final String registrar = ProcessorHarness.generatedSource(result, "test", "gen", "BeanRegistrarGenerated.java");
     assertTrue(registrar.contains("pool.put(\"testController\", new TestController(pool.get(TestService.class)))"), registrar);
     assertTrue(registrar.contains("pool.put(\"testService\", new TestService())"), registrar);
-    assertTrue(registrar.contains("pool.put(\"service\", new TestFactory().service())"), registrar);
+    assertTrue(registrar.contains("pool.put(\"service\", pool.get(TestFactory.class).service())"), registrar);
     assertTrue(registrar.contains("ShutdownHook"), registrar);
     assertTrue(registrar.contains("test.TestHooks.stop"), registrar);
   }

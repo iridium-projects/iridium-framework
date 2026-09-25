@@ -146,7 +146,7 @@ public final class ConfigBinding {
 
       final ExecutableElement constructor = constructorOf(type);
       if (constructor == null) {
-        error(type, "configuration type must have a single constructor or an @Inject constructor");
+        error(type, "configuration type must have exactly one constructor");
         visiting.remove(qualified);
         return null;
       }

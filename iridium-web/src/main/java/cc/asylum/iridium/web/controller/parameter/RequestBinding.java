@@ -16,7 +16,6 @@ public @interface RequestBinding {
     QUERY,
     HEADER,
     COOKIE,
-    BODY,
-    ATTRIBUTE
+    BODY
   }
 }

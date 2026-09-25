@@ -4,6 +4,7 @@ import com.io7m.jodist.ClassName;
 import com.io7m.jodist.MethodSpec;
 import cc.asylum.iridium.codegen.IridiumProcessor;
 import cc.asylum.iridium.codegen.support.BindingContext;
+import cc.asylum.iridium.codegen.support.Diagnostics;
 import cc.asylum.iridium.codegen.support.ModelSupport;
 import cc.asylum.iridium.codegen.support.SourceWriter;
 import cc.asylum.iridium.codegen.support.TypeSupport;
@@ -70,13 +71,14 @@ public final class WebProcessor extends IridiumProcessor {
         .addParameter(ROUTER, "router");
 
     for (final TypeElement middleware : middlewares) {
+      final ExecutableElement constructor = ModelSupport.resolveConstructor(middleware);
+      if (constructor == null) {
+        Diagnostics.error(messager, middleware, "type must have exactly one constructor");
+        continue;
+      }
       register.addStatement("router.use(new $T($L))",
           ClassName.get(middleware),
-          ModelSupport.dependencyArgs(
-              ModelSupport.resolveConstructor(middleware),
-              routes.beanLookupPool(),
-              binding
-          )
+          ModelSupport.dependencyArgs(constructor, routes.beanLookupPool(), binding)
       );
     }
 

@@ -23,6 +23,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -90,11 +92,11 @@ public final class BeanProcessor extends IridiumProcessor {
       }
       final ExecutableElement constructor = ModelSupport.resolveConstructor(component);
       if (constructor == null) {
-        register.addStatement("pool.put($S, new $T())", name, type);
-      } else {
-        register.addStatement("pool.put($S, new $T($L))",
-            name, type, ModelSupport.dependencyArgs(constructor, binding));
+        Diagnostics.error(messager, component, "type must have exactly one constructor");
+        continue;
       }
+      register.addStatement("pool.put($S, new $T($L))",
+          name, type, ModelSupport.dependencyArgs(constructor, binding));
     }
 
     for (final ExecutableElement method : beanMethods) {
@@ -104,26 +106,46 @@ public final class BeanProcessor extends IridiumProcessor {
         Diagnostics.error(messager, method, "duplicate bean name '" + methodName + "'");
         continue;
       }
-      register.addStatement("pool.put($S, new $T().$N($L))",
+      if (enclosing.getAnnotation(Component.class) == null
+          && enclosing.getAnnotation(RestController.class) == null) {
+        Diagnostics.error(messager, method, "@Bean methods must be declared on a @Component");
+        continue;
+      }
+      final String owner = ModelSupport.decapitalize(enclosing.getSimpleName().toString());
+      register.addStatement("pool.put($S, pool.get($T.class).$N($L))",
           methodName,
           ClassName.get(enclosing),
           methodName,
           ModelSupport.dependencyArgs(method, binding)
       );
+      if (!names.contains(owner)) {
+        Diagnostics.error(messager, enclosing, "no bean registered for '" + owner + "'");
+      }
     }
 
+    final List<ExecutableElement> pendingHooks = new ArrayList<>();
     for (final ExecutableElement method : hookMethods) {
+      final TypeElement enclosing = (TypeElement) method.getEnclosingElement();
+      if (enclosing.getAnnotation(Component.class) == null
+          && enclosing.getAnnotation(RestController.class) == null) {
+        Diagnostics.error(messager, method, "@OnShutdown methods must be declared on a @Component");
+        continue;
+      }
+      pendingHooks.add(method);
+    }
+
+    for (final ExecutableElement method : pendingHooks) {
       final TypeElement enclosing = (TypeElement) method.getEnclosingElement();
       final String methodName = method.getSimpleName().toString();
       final int priority = method.getAnnotation(OnShutdown.class).priority();
+      final String owner = ModelSupport.decapitalize(enclosing.getSimpleName().toString());
+      if (!names.contains(owner)) {
+        Diagnostics.error(messager, enclosing, "no bean registered for '" + owner + "'");
+        continue;
+      }
       register.addStatement("pool.put($S, $L)",
           enclosing.getQualifiedName() + "." + methodName,
-          HookWriter.shutdownHook(
-              ClassName.get(enclosing),
-              methodName,
-              priority,
-              ModelSupport.dependencyArgs(ModelSupport.resolveConstructor(enclosing), binding)
-          )
+          HookWriter.shutdownHook(ClassName.get(enclosing), methodName, priority)
       );
     }
 

@@ -28,7 +28,7 @@ class BeanPoolTest {
     assertSame(alpha, pool.get(Alpha.class));
     assertSame(alpha, pool.get(Marker.class));
     assertNull(pool.get("missing"));
-    assertNull(pool.get(Missing.class));
+    assertThrows(IllegalStateException.class, () -> pool.get(Missing.class));
     assertEquals(List.of(alpha), pool.all(Alpha.class));
     assertTrue(pool.all(Missing.class).isEmpty());
   }
@@ -54,7 +54,7 @@ class BeanPoolTest {
     pool.clear();
 
     assertNull(pool.get("alpha"));
-    assertNull(pool.get(Alpha.class));
+    assertThrows(IllegalStateException.class, () -> pool.get(Alpha.class));
   }
 
   @Test

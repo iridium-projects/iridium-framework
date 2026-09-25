@@ -39,9 +39,7 @@ public final class Iridium {
       final var message = exception.getMessage();
 
       log.error("Failed to initialize BeanPool: {}", message);
-
-      System.exit(1);
-      return;
+      throw new IllegalStateException(message, exception);
     }
 
     final var server = WebServer.load();
@@ -52,9 +50,7 @@ public final class Iridium {
       final var message = exception.getMessage();
 
       log.error("Failed to start web server on {}:{}: {}", config.host(), config.port(), message);
-
-      System.exit(1);
-      return;
+      throw new IllegalStateException(message, exception);
     }
 
     server.registerRoutes();
