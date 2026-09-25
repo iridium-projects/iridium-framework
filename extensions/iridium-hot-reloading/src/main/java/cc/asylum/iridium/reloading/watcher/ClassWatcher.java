@@ -42,15 +42,22 @@ public class ClassWatcher implements Runnable {
   }
 
   private Unit watch() throws Exception {
-    try (final var watchService = FileSystems.getDefault().newWatchService()) {
-      registerTree(root, watchService);
+    while (!Thread.currentThread().isInterrupted()) {
+      if (!Files.isDirectory(root)) {
+        Thread.sleep(200);
+        continue;
+      }
 
-      while (true) {
-        final var key = watchService.take();
-        handle(key, watchService);
+      try (final var watchService = FileSystems.getDefault().newWatchService()) {
+        this.registerTree(root, watchService);
 
-        if (!key.reset()) {
-          break;
+        while (true) {
+          final var key = watchService.take();
+          this.handle(key, watchService);
+
+          if (!key.reset()) {
+            break;
+          }
         }
       }
     }
