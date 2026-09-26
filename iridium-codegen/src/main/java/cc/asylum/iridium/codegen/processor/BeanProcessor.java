@@ -18,8 +18,10 @@ import cc.asylum.iridium.core.bean.BeanRegistrar;
 import cc.asylum.iridium.core.component.Component;
 import cc.asylum.iridium.core.hook.OnShutdown;
 import cc.asylum.iridium.web.controller.RestController;
+import cc.asylum.iridium.web.http.HttpClient;
 
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -91,7 +93,8 @@ public final class BeanProcessor extends IridiumProcessor {
         RestController.class.getCanonicalName(),
         Bean.class.getCanonicalName(),
         OnShutdown.class.getCanonicalName(),
-        ConfigurationProperties.class.getCanonicalName());
+        ConfigurationProperties.class.getCanonicalName(),
+        HttpClient.class.getCanonicalName());
   }
 
   @Override
@@ -104,7 +107,9 @@ public final class BeanProcessor extends IridiumProcessor {
     configs.addAll(ModelSupport.annotatedTypes(roundEnv, ConfigurationProperties.class, ElementKind.RECORD));
     final Set<ExecutableElement> beanMethods = ModelSupport.annotatedMethods(roundEnv, Bean.class);
     final Set<ExecutableElement> hookMethods = ModelSupport.annotatedMethods(roundEnv, OnShutdown.class);
-    if (components.isEmpty() && configs.isEmpty() && beanMethods.isEmpty() && hookMethods.isEmpty()) {
+    final Set<TypeElement> clients = ModelSupport.annotatedTypes(roundEnv, HttpClient.class, ElementKind.INTERFACE);
+    if (components.isEmpty() && configs.isEmpty() && beanMethods.isEmpty() && hookMethods.isEmpty()
+        && clients.isEmpty()) {
       return;
     }
 
@@ -132,6 +137,16 @@ public final class BeanProcessor extends IridiumProcessor {
       if (init != null) {
         register.addStatement("pool.put($S, $L)", name, init);
       }
+    }
+
+    for (final TypeElement client : clients) {
+      final String impl = client.getQualifiedName() + "Undertow";
+      final String name = ModelSupport.decapitalize(client.getSimpleName().toString());
+      if (!names.add(name)) {
+        Diagnostics.error(messager, client, "duplicate bean name '" + name + "'");
+        continue;
+      }
+      register.addStatement("pool.put($S, new $L())", name, impl);
     }
 
     final List<TypeElement> ordered = orderByDependencies(components);
@@ -169,8 +184,7 @@ public final class BeanProcessor extends IridiumProcessor {
           methodName,
           ClassName.get(enclosing),
           methodName,
-          ModelSupport.dependencyArgs(method, binding)
-      );
+          ModelSupport.dependencyArgs(method, binding));
       if (!names.contains(owner)) {
         Diagnostics.error(messager, enclosing, "no bean registered for '" + owner + "'");
       }
@@ -198,14 +212,15 @@ public final class BeanProcessor extends IridiumProcessor {
       }
       register.addStatement("pool.put($S, $L)",
           enclosing.getQualifiedName() + "." + methodName,
-          HookWriter.shutdownHook(ClassName.get(enclosing), methodName, priority)
-      );
+          HookWriter.shutdownHook(ClassName.get(enclosing), methodName, priority));
     }
 
+    final List<Element> origins = new ArrayList<>(roots);
+    origins.addAll(clients);
     SourceWriter.writeJava(filer, pkg, SourceWriter.generatedType(GENERATED_CLASS)
         .addSuperinterface(ClassName.get(BeanRegistrar.class))
         .addMethod(register.build())
-        .build(), roots.toArray(new TypeElement[0]));
+        .build(), origins.toArray(new Element[0]));
     SourceWriter.writeService(filer, BeanRegistrar.class, pkg + "." + GENERATED_CLASS,
         roots.toArray(new TypeElement[0]));
   }

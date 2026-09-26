@@ -1,4 +1,5 @@
 cc.asylum.iridium.codegen.processor.BeanProcessor
 cc.asylum.iridium.codegen.processor.ValidationProcessor
 cc.asylum.iridium.codegen.processor.WebProcessor
+cc.asylum.iridium.codegen.processor.HttpClientProcessor
 cc.asylum.iridium.core.annotation.processor.InternalUsageProcessor
