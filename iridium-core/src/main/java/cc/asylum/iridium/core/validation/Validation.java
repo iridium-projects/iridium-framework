@@ -24,14 +24,17 @@ public final class Validation {
     if (initialized) {
       return;
     }
+
     synchronized (Validation.class) {
       if (initialized) {
         return;
       }
+
       REGISTRY.clear();
       for (final ValidationRegistrar registrar : ServiceLoader.load(ValidationRegistrar.class)) {
         registrar.register(REGISTRY);
       }
+
       initialized = true;
     }
   }
