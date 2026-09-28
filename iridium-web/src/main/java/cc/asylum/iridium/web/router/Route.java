@@ -16,7 +16,7 @@ public final class Route {
   private final boolean readsBody;
   private final boolean exact;
 
-  protected Route(final String method, final String path, final Handler handler) {
+  public Route(final String method, final String path, final Handler handler) {
     this.method = Request.normalizeMethod(method);
     this.path = path;
     this.segments = Request.split(path);

@@ -22,6 +22,9 @@ class IridiumPlugin : Plugin<Project> {
     }
 
     project.repositories.mavenCentral()
+    project.repositories.maven {
+      url = java.net.URI.create("https://maven.iridium4j.io/releases")
+    }
     project.tasks.withType(JavaCompile::class.java).configureEach {
       options.compilerArgs.add("-parameters")
     }
@@ -50,14 +53,17 @@ class IridiumPlugin : Plugin<Project> {
     val local = project.rootProject.findProject(":iridium")
     if (local != null) {
       project.dependencies.add("implementation", local)
-      project.dependencies.add(
-        "annotationProcessor",
-        project.rootProject.project(":iridium-codegen"),
-      )
+      project.dependencies.add("annotationProcessor", project.rootProject.project(":iridium-codegen"))
+      project.dependencies.add("annotationProcessor", project.rootProject.project(":iridium-core"))
+      project.dependencies.add("annotationProcessor", project.rootProject.project(":iridium-web"))
+      project.dependencies.add("annotationProcessor", project.rootProject.project(":iridium-config"))
     } else {
       val version = project.findProperty("iridium.version") as String? ?: "0.1.0"
       project.dependencies.add("implementation", "cc.asylum:iridium:$version")
       project.dependencies.add("annotationProcessor", "cc.asylum:iridium-codegen:$version")
+      project.dependencies.add("annotationProcessor", "cc.asylum:iridium-core:$version")
+      project.dependencies.add("annotationProcessor", "cc.asylum:iridium-web:$version")
+      project.dependencies.add("annotationProcessor", "cc.asylum:iridium-config:$version")
     }
   }
 

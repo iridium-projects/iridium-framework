@@ -12,4 +12,6 @@ dependencies() {
   api("org.slf4j:slf4j-api:2.0.16")
   api("io.avaje:avaje-jsonb:3.16")
   api(project(":iridium-log"))
+  compileOnly(project(":iridium-codegen"))
+  annotationProcessor(project(":iridium-codegen"))
 }

@@ -13,6 +13,9 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.iridium4j.io/releases")
+    }
 }
 
 dependencies() {

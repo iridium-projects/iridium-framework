@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@RequestBinding(RequestBinding.Source.PATH)
+@RequestBinding(BindingSource.PATH)
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.CLASS)
 public @interface PathVariable {

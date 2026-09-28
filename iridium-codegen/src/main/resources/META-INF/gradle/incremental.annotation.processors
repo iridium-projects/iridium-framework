@@ -1,5 +1,1 @@
-cc.asylum.iridium.codegen.processor.BeanProcessor,AGGREGATING
-cc.asylum.iridium.codegen.processor.ValidationProcessor,AGGREGATING
-cc.asylum.iridium.codegen.processor.WebProcessor,AGGREGATING
-cc.asylum.iridium.codegen.processor.HttpClientProcessor,ISOLATING
-cc.asylum.iridium.core.annotation.processor.InternalUsageProcessor,ISOLATING
+cc.asylum.iridium.codegen.ServiceProcessor,AGGREGATING

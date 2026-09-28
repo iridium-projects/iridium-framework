@@ -1,5 +1,6 @@
 package cc.asylum.iridium.config;
 
+import cc.asylum.iridium.config.source.Sources;
 import cc.asylum.iridium.core.result.Result;
 import cc.asylum.iridium.core.util.Strings;
 

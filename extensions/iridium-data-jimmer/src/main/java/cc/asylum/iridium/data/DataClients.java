@@ -1,6 +1,9 @@
 package cc.asylum.iridium.data;
 
 import cc.asylum.iridium.data.config.DataSettings;
+import cc.asylum.iridium.data.config.NamingMode;
+import cc.asylum.iridium.data.config.PoolSettings;
+import cc.asylum.iridium.data.config.ValidationMode;
 import cc.asylum.iridium.data.dialect.Dialects;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -41,8 +44,8 @@ public final class DataClients {
       config.setCatalog(settings.catalog());
     }
 
-    final DataSettings.Pool pool = settings.pool() == null
-        ? new DataSettings.Pool(10, 1, 30_000L, 600_000L, 1_800_000L, "iridium")
+    final PoolSettings pool = settings.pool() == null
+        ? new PoolSettings(10, 1, 30_000L, 600_000L, 1_800_000L, "iridium")
         : settings.pool();
 
     config.setMaximumPoolSize(pool.maximumPoolSize());
@@ -60,7 +63,7 @@ public final class DataClients {
         .setConnectionManager(ConnectionManager.simpleConnectionManager(dataSource))
         .setDialect(dialect(settings).create())
         .setDatabaseValidationMode(validation(settings.validation()))
-        .setDatabaseNamingStrategy(settings.naming() == DataSettings.Naming.LOWER
+        .setDatabaseNamingStrategy(settings.naming() == NamingMode.LOWER
             ? DefaultDatabaseNamingStrategy.LOWER_CASE
             : DefaultDatabaseNamingStrategy.UPPER_CASE);
 
@@ -83,7 +86,7 @@ public final class DataClients {
     return Dialects.parse(settings.dialect());
   }
 
-  private static DatabaseValidationMode validation(final DataSettings.Validation validation) {
+  private static DatabaseValidationMode validation(final ValidationMode validation) {
     return switch (validation) {
       case NONE -> DatabaseValidationMode.NONE;
       case WARNING -> DatabaseValidationMode.WARNING;

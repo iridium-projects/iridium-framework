@@ -32,19 +32,12 @@ public final class Router {
 
   private List<Middleware> chain;
 
-  public void register(
-      final String method,
-      final String path,
-      final Handler handler) {
-    final Route route = new Route(
-        method,
-        Paths.normalize(path),
-        handler);
+  public void register(final String method, final String path, final Handler handler) {
+    final Route route = new Route(method, Paths.normalize(path), handler);
 
     routes.add(route);
 
-    byMethod.computeIfAbsent(route.method(), ignored -> new ArrayList<>())
-        .add(route);
+    byMethod.computeIfAbsent(route.method(), ignored -> new ArrayList<>()).add(route);
 
     if (route.exact()) {
       exact.put(route.method() + " " + route.path(), route);
@@ -85,23 +78,20 @@ public final class Router {
       return Response.notFound().build();
     }
 
-    final String[] segments = request.segments() != null
-        ? request.segments()
-        : Request.split(path);
+    final String[] segments = request.segments() != null ? request.segments() : Request.split(path);
 
     for (final Route route : routes) {
       if (route.exact()) {
         continue;
       }
+
       final Map<String, String> variables = route.match(segments);
 
       if (variables == null) {
         continue;
       }
 
-      final Request matched = variables == NO_VARIABLES
-          ? request
-          : request.withPathVariables(variables);
+      final Request matched = variables == NO_VARIABLES ? request : request.withPathVariables(variables);
 
       return invoke(matched, route);
     }
@@ -123,9 +113,7 @@ public final class Router {
 
   }
 
-  private Response<?> invoke(
-      final Request request,
-      final Route route) throws Exception {
+  private Response<?> invoke(final Request request, final Route route) throws Exception {
     Request matched = request;
 
     if (route.readsBody() && matched.body() == null) {
@@ -135,9 +123,7 @@ public final class Router {
     return invoke(matched, route.handler());
   }
 
-  private Response<?> invoke(
-      final Request request,
-      final Handler terminal) throws Exception {
+  private Response<?> invoke(final Request request, final Handler terminal) throws Exception {
     final List<Middleware> chain = middlewareChain();
 
     if (chain.isEmpty()) {
@@ -149,17 +135,13 @@ public final class Router {
 
   private List<Middleware> middlewareChain() {
     if (chain == null) {
-      chain = middlewares.stream()
-          .sorted(Comparator.comparingInt(Middleware::priority))
-          .toList();
+      chain = middlewares.stream().sorted(Comparator.comparingInt(Middleware::priority)).toList();
     }
 
     return chain;
   }
 
   public static Router load() {
-    BeanPool.initialize();
-
     final Router router = new Router();
 
     for (final WebRegistrar registrar : ServiceLoader.load(WebRegistrar.class)) {

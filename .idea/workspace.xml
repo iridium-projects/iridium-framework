@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.common-convention.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.common-convention.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.module-convention.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.module-convention.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-data-jimmer/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/DataClients.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/DataClients.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/config/DataSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/config/DataSettings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/Op.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/Op.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/SpecBinderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/processor/SpecBinderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/SpecBinding.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/processor/SpecBinding.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/java/cc/asylum/iridium/data/spec/SpecValues.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/extensions/iridium-data-jimmer/src/main/resources/META-INF/services/cc.asylum.iridium.codegen.binding.ParameterBinderFactory" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-codegen/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/IridiumProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/binding/ParameterBinder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/binding/ParameterBinderFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/binding/RequestValues.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/binding/WebRequestValues.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/processor/BeanProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/processor/HttpClientProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/processor/ValidationProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/processor/WebProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/support/BindingContext.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/support/Diagnostics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/support/MirrorSupport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/support/ModelSupport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/support/SourceWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/support/TypeSupport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/writer/ConfigBinding.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/writer/HookWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/writer/RouteWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/writer/ValidatorWriter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/resources/META-INF/gradle/incremental.annotation.processors" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-codegen/src/main/resources/META-INF/gradle/incremental.annotation.processors" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-codegen/src/main/resources/META-INF/services/javax.annotation.processing.Processor" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-codegen/src/main/resources/META-INF/services/javax.annotation.processing.Processor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-config/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-config/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/ConfigError.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/ConfigError.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/ConfigFiles.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/Keys.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-config/src/main/java/cc/asylum/iridium/config/Sources.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-core/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-core/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/annotation/Generated.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-codegen/src/main/java/cc/asylum/iridium/codegen/Generated.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/annotation/processor/InternalUsageProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/annotation/processor/InternalUsageProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/component/Component.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/component/Component.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/result/Result.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-core/src/main/java/cc/asylum/iridium/core/result/Result.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-gradle-plugin/src/main/kotlin/cc/asylum/iridium/gradle/IridiumPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-gradle-plugin/src/main/kotlin/cc/asylum/iridium/gradle/IridiumPlugin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-tests/.project" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/Parameters.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/Parameters.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/RestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/RestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/CookieValue.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/CookieValue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/PathVariable.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/PathVariable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestBinding.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestBinding.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestBody.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestBody.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestHeader.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestHeader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestParam.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/controller/parameter/RequestParam.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/http/HttpClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/http/HttpClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/router/Route.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/router/Route.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/router/Router.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/router/Router.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build setup" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+                <item name="iridium-demo-hello" type="2d1252cf:ModuleNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+                <item name="iridium-demo-hello" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="iridium" type="f1a62948:ProjectNode" />
+                <item name="iridium" type="2d1252cf:ModuleNode" />
+                <item name="iridium-demo-hello" type="2d1252cf:ModuleNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="application" type="c8890929:TasksNode$1" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="INCOMING_COMMITS_CHECK_STRATEGY" value="FETCH" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="refafactor/code-generation-cleanup-and-unified-api" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3Jt5QpHtmPmm8bjcPJdZlsPU1IF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.iridium-framework [:iridium-demo-hello:cc.asylum.iridium.demo.hello.Application.main()].executor": "Run",
+    "Gradle.iridium-framework [:iridium-demo-hello:run].executor": "Run",
+    "Gradle.iridium-framework [build].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "refactor/general-codebase-refactor",
+    "git.auto.fetch.suggestion.counter": "2",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/ly/Projects/forgery",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
+  }
+}]]></component>
+  <component name="RunManager" selected="Gradle.iridium-framework [build]">
+    <configuration name="Application" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="cc.asylum.iridium.demo.hello.Application" />
+      <module name="iridium.iridium-demo-hello.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cc.asylum.iridium.demo.hello.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="iridium-framework [:iridium-demo-hello:run]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":iridium-demo-hello:run" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="iridium-framework [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="iridium-framework" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="iridium-framework" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.iridium-framework [build]" />
+        <item itemvalue="Application.Application" />
+        <item itemvalue="Gradle.iridium-framework [:iridium-demo-hello:run]" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-63390994e64e-intellij.indexing.shared.core-IU-262.8665.337" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.8665.337" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="" />
+      <created>1790467513825</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1790467513825</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

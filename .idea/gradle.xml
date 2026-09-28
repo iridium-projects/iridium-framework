@@ -21,14 +21,14 @@
           </compositeBuild>
         </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="ms-25" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/demos/iridium-demo-hello" />
             <option value="$PROJECT_DIR$/extensions/iridium-data-jimmer" />
-            <option value="$PROJECT_DIR$/extensions/iridium-json-avaje" />
+            <option value="$PROJECT_DIR$/extensions/iridium-hot-reloading" />
             <option value="$PROJECT_DIR$/extensions/iridium-log" />
             <option value="$PROJECT_DIR$/extensions/iridium-openapi" />
             <option value="$PROJECT_DIR$/extensions/iridium-web-undertow" />
@@ -37,8 +37,6 @@
             <option value="$PROJECT_DIR$/iridium-config" />
             <option value="$PROJECT_DIR$/iridium-core" />
             <option value="$PROJECT_DIR$/iridium-gradle-plugin" />
-            <option value="$PROJECT_DIR$/iridium-json" />
-            <option value="$PROJECT_DIR$/iridium-tests" />
             <option value="$PROJECT_DIR$/iridium-web" />
           </set>
         </option>

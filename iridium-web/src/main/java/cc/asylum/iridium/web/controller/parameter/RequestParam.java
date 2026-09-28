@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@RequestBinding(RequestBinding.Source.QUERY)
+@RequestBinding(BindingSource.QUERY)
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.CLASS)
 public @interface RequestParam {

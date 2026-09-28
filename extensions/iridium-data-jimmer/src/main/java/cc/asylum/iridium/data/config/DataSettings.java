@@ -12,33 +12,12 @@ public record DataSettings(
     @Default("") String dialect,
     @Default("false") boolean showSql,
     @Default("false") boolean prettySql,
-    @Default("NONE") Validation validation,
-    @Default("UPPER") Naming naming,
+    @Default("NONE") ValidationMode validation,
+    @Default("UPPER") NamingMode naming,
     @Default("") String schema,
     @Default("") String catalog,
-    @Nullable Pool pool
+    @Nullable PoolSettings pool
 ) {
-
-  public enum Validation {
-    NONE,
-    WARNING,
-    ERROR
-  }
-
-  public enum Naming {
-    UPPER,
-    LOWER
-  }
-
-  public record Pool(
-      @Default("10") int maximumPoolSize,
-      @Default("1") int minimumIdle,
-      @Default("30000") long connectionTimeout,
-      @Default("600000") long idleTimeout,
-      @Default("1800000") long maxLifetime,
-      @Default("iridium") String poolName
-  ) {
-  }
 
   public static DataSettings of(final String url) {
     return new DataSettings(
@@ -48,11 +27,11 @@ public record DataSettings(
         "",
         false,
         false,
-        Validation.NONE,
-        Naming.UPPER,
+        ValidationMode.NONE,
+        NamingMode.UPPER,
         "",
         "",
-        new Pool(10, 1, 30_000L, 600_000L, 1_800_000L, "iridium")
+        new PoolSettings(10, 1, 30_000L, 600_000L, 1_800_000L, "iridium")
     );
   }
 }

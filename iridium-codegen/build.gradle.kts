@@ -5,11 +5,11 @@ plugins {
 
 repositories {
   mavenCentral()
+  maven {
+    url = uri("https://maven.iridium4j.io/releases")
+  }
 }
 
 dependencies() {
-  api(project(":iridium-core"))
-  api(project(":iridium-web"))
-  api(project(":iridium-config"))
-  api("com.io7m.jodist:com.io7m.jodist.core:2.0.1")
+  api("cc.asylum:forgery-jodist:0.0.1")
 }
