@@ -8,9 +8,12 @@ import cc.asylum.iridium.web.router.Request;
 import cc.asylum.iridium.web.router.Router;
 import cc.asylum.iridium.web.webserver.WebServer;
 import cc.asylum.iridium.web.response.Response;
+import cc.asylum.iridium.web.undertow.client.UndertowClients;
 import io.undertow.Undertow;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RequestTooBigException;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 import org.slf4j.Logger;
@@ -19,6 +22,9 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Internal
 public final class UndertowWebServer implements WebServer {
@@ -58,6 +64,16 @@ public final class UndertowWebServer implements WebServer {
       router = Router.load();
       return Unit.INSTANCE;
     });
+  }
+
+  @Override
+  public byte[] exchange(
+      final String baseUrl,
+      final String method,
+      final String path,
+      final String contentType,
+      final byte[] body) {
+    return UndertowClients.exchange(baseUrl, method, path, contentType, body);
   }
 
   @Override
@@ -104,9 +120,18 @@ public final class UndertowWebServer implements WebServer {
         exchange.getRequestMethod().toString(),
         exchange.getRequestURI(),
         Request.split(exchange.getRequestURI()),
-        exchange.getRequestHeaders(),
+        headers(exchange.getRequestHeaders()),
         exchange.getQueryParameters(),
         () -> open(exchange));
+  }
+
+  private static Map<String, List<String>> headers(final HeaderMap source) {
+    final Map<String, List<String>> headers = new LinkedHashMap<>();
+    for (final HeaderValues values : source) {
+      headers.put(values.getHeaderName().toString(), List.copyOf(values));
+    }
+
+    return headers;
   }
 
   private static InputStream open(final HttpServerExchange exchange) {

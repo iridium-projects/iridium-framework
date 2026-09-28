@@ -76,7 +76,7 @@ public final class HttpClientModel {
     SourceWriter.writeJava(
       processing.filer(),
       Elements.packageOf(processing.elements(), client),
-      client.getSimpleName() + "Undertow",
+      client.getSimpleName() + "Client",
       type -> {
         type.implements_(Types.of(client));
         for (final GeneratedMethod method : methods) {

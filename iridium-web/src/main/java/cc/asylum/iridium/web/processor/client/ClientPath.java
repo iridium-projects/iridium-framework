@@ -5,6 +5,7 @@ import cc.asylum.forgery.model.TypeRef;
 import cc.asylum.iridium.codegen.code.Exprs;
 import cc.asylum.iridium.codegen.code.Types;
 import cc.asylum.iridium.core.annotation.Internal;
+import cc.asylum.iridium.web.http.HttpClients;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 @Internal
 public final class ClientPath {
 
-  static final TypeRef CLIENTS = Types.of("cc.asylum.iridium.web.undertow.client", "UndertowClients");
+  static final TypeRef CLIENTS = Types.of(HttpClients.class);
 
   private ClientPath() {
   }

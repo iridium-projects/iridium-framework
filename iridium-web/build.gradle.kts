@@ -9,7 +9,6 @@ repositories {
 
 dependencies() {
     api(project(":iridium-core"))
-    compileOnly(libs.undertow.core)
     compileOnly(project(":iridium-codegen"))
     annotationProcessor(project(":iridium-codegen"))
 }

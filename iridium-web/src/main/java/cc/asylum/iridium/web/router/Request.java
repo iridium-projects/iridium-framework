@@ -2,13 +2,9 @@ package cc.asylum.iridium.web.router;
 
 import cc.asylum.iridium.core.util.Lists;
 import cc.asylum.iridium.core.util.Paths;
-import io.undertow.util.HeaderMap;
 
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
@@ -18,7 +14,7 @@ public final class Request {
   private final String path;
   private final String[] segments;
 
-  private final HeaderMap headerMap;
+  private final Map<String, List<String>> headerMap;
   private final Map<String, List<String>> headers;
 
   private final Map<String, ? extends Collection<String>> queryParameters;
@@ -50,7 +46,7 @@ public final class Request {
       final String method,
       final String path,
       final String[] segments,
-      final HeaderMap headerMap,
+      final Map<String, List<String>> headerMap,
       final Map<String, ? extends Collection<String>> queryParameters,
       final Supplier<InputStream> input) {
     this(
@@ -69,7 +65,7 @@ public final class Request {
       final String method,
       final String path,
       final String[] segments,
-      final HeaderMap headerMap,
+      final Map<String, List<String>> headerMap,
       final Map<String, List<String>> headers,
       final Map<String, ? extends Collection<String>> queryParameters,
       final Map<String, String> pathVariables,
@@ -98,7 +94,7 @@ public final class Request {
     return segments;
   }
 
-  public HeaderMap headerMap() {
+  public Map<String, List<String>> headerMap() {
     return headerMap;
   }
 
@@ -131,25 +127,19 @@ public final class Request {
       return List.of();
     }
 
-    if (headerMap != null) {
-      final var values = headerMap.get(name);
-      return values == null ? List.of() : values;
-    }
-
-    if (headers == null) {
+    final Map<String, List<String>> source = headerMap != null ? headerMap : headers;
+    if (source == null) {
       return List.of();
     }
 
-    final List<String> values = headers.get(name);
+    final List<String> values = source.get(name);
     if (values != null) {
       return values;
     }
 
     final String normalized = name.toLowerCase(Locale.ROOT);
-
-    for (final Entry<String, List<String>> entry : headers.entrySet()) {
+    for (final Entry<String, List<String>> entry : source.entrySet()) {
       final String key = entry.getKey();
-
       if (key != null && key.toLowerCase(Locale.ROOT).equals(normalized)) {
         return entry.getValue() == null ? List.of() : entry.getValue();
       }

@@ -2,7 +2,6 @@ package cc.asylum.iridium.web.undertow.client;
 
 import cc.asylum.iridium.core.annotation.Internal;
 import cc.asylum.iridium.core.util.Strings;
-import io.avaje.jsonb.Jsonb;
 import io.undertow.client.ClientCallback;
 import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientExchange;
@@ -31,10 +30,8 @@ import javax.net.ssl.SSLContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -48,7 +45,6 @@ public final class UndertowClients {
 
   private static final UndertowClient CLIENT = UndertowClient.getInstance();
 
-  private static final Jsonb JSONB = Jsonb.instance();
   private static final ByteBufferPool BUFFERS = new DefaultByteBufferPool(
       true,
       BUFFER_SIZE,
@@ -83,43 +79,6 @@ public final class UndertowClients {
     } finally {
       close(connection);
     }
-  }
-
-  public static byte[] bytes(final Object body) {
-    return switch (body) {
-      case null -> null;
-      case final byte[] raw -> raw;
-      default -> JSONB.toJsonBytes(body);
-    };
-  }
-
-  public static <T> T json(final byte[] body, final Class<T> type) {
-    if (body == null || body.length == 0) {
-      return null;
-    }
-
-    return JSONB.type(type).fromJson(body);
-  }
-
-  public static String query(final Object value) {
-    if (value == null) {
-      return "";
-    }
-
-    return URLEncoder.encode(String.valueOf(value), StandardCharsets.UTF_8);
-  }
-
-  public static String contentTypeOf(final String declared, final Object body) {
-    if (!Strings.blank(declared)) {
-      return declared;
-    }
-
-    return switch (body) {
-      case null -> null;
-      case final byte[] _ -> "application/octet-stream";
-      case final String _ -> "text/plain; charset=utf-8";
-      default -> "application/json";
-    };
   }
 
   private static ClientConnection connect(final URI uri) {
@@ -279,8 +238,9 @@ public final class UndertowClients {
 
     channel.getReadSetter().set(source -> {
       final PooledByteBuffer pooled = exchange.getConnection().getBufferPool().allocate();
-      final ByteBuffer buffer = pooled.getBuffer();
-      try {
+
+      try (pooled) {
+        final ByteBuffer buffer = pooled.getBuffer();
         while (true) {
           buffer.clear();
           final int read = source.read(buffer);
@@ -305,8 +265,6 @@ public final class UndertowClients {
         }
       } catch (final IOException e) {
         result.completeExceptionally(e);
-      } finally {
-        pooled.close();
       }
     });
     channel.resumeReads();
