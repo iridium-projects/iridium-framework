@@ -23,7 +23,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ClassWatcher implements Runnable {
+public final class ClassWatcher implements Runnable {
 
   private final Path root;
   private final Reloader reloader;

@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
   api(project(":iridium-core"))
-  implementation("org.yaml:snakeyaml:2.3")
+  implementation(libs.snakeyaml)
   compileOnly(project(":iridium-codegen"))
   annotationProcessor(project(":iridium-codegen"))
 }

@@ -11,5 +11,5 @@ repositories {
 }
 
 dependencies() {
-  api("cc.asylum:forgery-jodist:0.0.1")
+  api(libs.forgery.jodist)
 }

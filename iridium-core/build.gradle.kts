@@ -8,9 +8,9 @@ repositories {
 }
 
 dependencies() {
-  annotationProcessor("io.avaje:avaje-jsonb-generator:3.16")
-  api("org.slf4j:slf4j-api:2.0.16")
-  api("io.avaje:avaje-jsonb:3.16")
+  annotationProcessor(libs.avaje.jsonb.generator)
+  api(libs.slf4j.api)
+  api(libs.avaje.jsonb)
   api(project(":iridium-log"))
   compileOnly(project(":iridium-codegen"))
   annotationProcessor(project(":iridium-codegen"))

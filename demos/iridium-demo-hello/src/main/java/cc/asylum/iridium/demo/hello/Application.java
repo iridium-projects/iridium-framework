@@ -6,7 +6,7 @@ import cc.asylum.iridium.web.WebApplication;
 @WebApplication
 public final class Application {
 
-  public static void main(final String[] args) {
+  static void main(final String[] args) {
     Iridium.run(Application.class, args);
   }
 }

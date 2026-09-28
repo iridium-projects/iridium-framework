@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class HotReloadingAgent {
+public final class HotReloadingAgent {
 
   private final Instrumentation instrumentation;
 

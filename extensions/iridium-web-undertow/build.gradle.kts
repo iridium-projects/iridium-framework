@@ -10,7 +10,7 @@ repositories {
 dependencies() {
     api(project(":iridium-web"))
 
-    implementation("io.undertow:undertow-core:2.4.3.Final")
+    implementation(libs.undertow.core)
 
-    api("org.slf4j:jul-to-slf4j:2.0.16")
+    api(libs.slf4j.jul)
 }

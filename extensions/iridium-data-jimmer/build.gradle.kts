@@ -11,8 +11,8 @@ dependencies {
   api(project(":iridium-config"))
   api(project(":iridium-log"))
   compileOnly(project(":iridium-web"))
-  api("org.babyfish.jimmer:jimmer-sql:0.12.3")
-  api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+  api(libs.jimmer.sql)
+  api(libs.jackson.databind)
 
-  implementation("com.zaxxer:HikariCP:6.3.3")
+  implementation(libs.hikaricp)
 }
