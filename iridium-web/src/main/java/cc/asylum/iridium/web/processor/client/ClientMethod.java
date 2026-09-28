@@ -44,6 +44,7 @@ public final class ClientMethod {
       Diagnostics.error(messager, method, "@RequestMapping value must not be empty");
       return null;
     }
+
     VariableElement body = null;
     final List<String> query = new ArrayList<>();
     final List<String> pathArgs = new ArrayList<>();
@@ -59,6 +60,7 @@ public final class ClientMethod {
         body = parameter;
         continue;
       }
+
       final String binding = bindingName(parameter, param);
       if (source == BindingSource.PATH) {
         pathArgs.add(binding);
@@ -68,20 +70,24 @@ public final class ClientMethod {
         query.add(param);
       }
     }
+
     final List<Stmt> statements = exchange(mapping, url, ClientPath.expression(path, pathArgs, query), body);
     final Stmt returned = returning(method.getReturnType());
     if (returned != null) {
       statements.add(returned);
     }
+
     return new GeneratedMethod(method.getSimpleName().toString(), builder -> {
       builder.public_().overrides();
       builder.returns(Types.of(method.getReturnType()));
       for (final TypeMirror thrown : method.getThrownTypes()) {
         builder.throws_(Types.of(thrown));
       }
+
       for (final VariableElement parameter : parameters) {
         builder.parameter(Types.of(parameter.asType()), parameter.getSimpleName().toString());
       }
+
       builder.body(block -> Blocks.addAll(block, statements));
     });
   }
@@ -99,11 +105,13 @@ public final class ClientMethod {
           ClientPath.CLIENTS, "exchange", Expr.lit(url), method, path, Exprs.lit(contentType(mapping)), Expr.nil())));
       return statements;
     }
+
     final Expr bodyName = Exprs.name(body.getSimpleName().toString());
     statements.add(Blocks.declare(String.class, "_contentType", Exprs.invokeStatic(ClientPath.CLIENTS, "contentTypeOf", Exprs.lit(contentType(mapping)), bodyName)));
     statements.add(Blocks.declare(byte[].class, "_encoded", Exprs.invokeStatic(ClientPath.CLIENTS, "bytes", bodyName)));
     statements.add(Blocks.declare(byte[].class, "_body", Exprs.invokeStatic(
         ClientPath.CLIENTS, "exchange", Expr.lit(url), method, path, Exprs.name("_contentType"), Exprs.name("_encoded"))));
+
     return statements;
   }
 
@@ -111,15 +119,19 @@ public final class ClientMethod {
     if (type.getKind() == TypeKind.VOID) {
       return null;
     }
+
     if (type.getKind() == TypeKind.ARRAY && "byte[]".equals(type.toString())) {
       return Blocks.ret(Exprs.name("_body"));
     }
+
     if (TypeMirrors.isString(types, type)) {
       return Blocks.ret(Exprs.invokeStatic(ClientPath.CLIENTS, "text", Exprs.name("_body")));
     }
+
     final TypeMirror erased = type.getKind().isPrimitive()
         ? types.boxedClass(types.getPrimitiveType(type.getKind())).asType()
         : types.erasure(type);
+
     return Blocks.ret(Exprs.invokeStatic(ClientPath.CLIENTS, "json", Exprs.name("_body"), Exprs.classLit(Types.of(erased))));
   }
 
@@ -128,6 +140,7 @@ public final class ClientMethod {
     if (mirror == null) {
       return BindingSource.QUERY;
     }
+
     final RequestBinding binding = mirror.getAnnotationType().asElement().getAnnotation(RequestBinding.class);
     return binding == null ? BindingSource.QUERY : binding.value();
   }
@@ -143,6 +156,7 @@ public final class ClientMethod {
     if (value == null) {
       return RequestMethod.GET.name();
     }
+
     final String text = value.toString();
     final int dot = text.lastIndexOf('.');
     return dot < 0 ? text : text.substring(dot + 1);

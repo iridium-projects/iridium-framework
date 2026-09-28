@@ -113,10 +113,13 @@ public final class RouteWriter {
         return Optional.empty();
       }
 
-      arguments.add(argument.get());
+      Expr bound = argument.get();
       if (parameter.getAnnotation(Valid.class) != null) {
-        validate(body, argument.get());
+        bound = escapeHtml(body, bound);
+        this.validate(body, bound);
       }
+
+      arguments.add(bound);
     }
 
     body.add(Blocks.ret(Exprs.invoke(Exprs.name("_controller"), method.getSimpleName().toString(), arguments)));
@@ -148,6 +151,7 @@ public final class RouteWriter {
       }
 
     });
+
     for (final var configure : body.nested()) {
       configure.accept(nested);
     }
@@ -162,6 +166,13 @@ public final class RouteWriter {
       Exprs.name(checked).invoke("isErr"),
       Blocks.ret(RequestRead.badRequest(Exprs.name(checked).invoke("unwrapErr")))));
   }
+
+  private Expr escapeHtml(final Body body, final Expr value) {
+    final String escaped = names.next("escaped");
+    body.add(Blocks.declareVar(escaped, Exprs.invokeStatic(Validation.class, "escape", value)));
+    return Exprs.name(escaped);
+  }
+
 
   private boolean readsBody(final VariableElement parameter) {
     if (parameter.getAnnotation(RequestBody.class) != null) {
@@ -185,6 +196,7 @@ public final class RouteWriter {
         result.add((ExecutableElement) enclosed);
       }
     }
+
     return result;
   }
 

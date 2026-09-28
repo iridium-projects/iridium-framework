@@ -4,16 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="refactor: moved dependency decleration and versioning to version catalogue">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/java/cc/asylum/iridium/web/undertow/UndertowWebServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/java/cc/asylum/iridium/web/undertow/UndertowWebServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/java/cc/asylum/iridium/web/undertow/client/UndertowClients.java" beforeDir="false" afterPath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/java/cc/asylum/iridium/web/undertow/client/UndertowClients.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/http/HttpClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/http/HttpClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/ClientPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/ClientPath.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/HttpClientModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/HttpClientModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/router/Request.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/router/Request.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/webserver/WebServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/webserver/WebServer.java" afterDir="false" />
+    <list default="true" id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="feat: made http server plugable">
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/ClientMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/ClientMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/route/RouteWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/route/RouteWriter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +123,7 @@
     "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
-  <component name="RunManager" selected="Gradle.iridium-framework [:iridium-demo-hello:run]">
+  <component name="RunManager" selected="Gradle.iridium-framework [build]">
     <configuration name="Application" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="cc.asylum.iridium.demo.hello.Application" />
       <module name="iridium.iridium-demo-hello.main" />
@@ -207,8 +200,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.iridium-framework [:iridium-demo-hello:run]" />
         <item itemvalue="Gradle.iridium-framework [build]" />
+        <item itemvalue="Gradle.iridium-framework [:iridium-demo-hello:run]" />
         <item itemvalue="Application.Application" />
       </list>
     </recent_temporary>
@@ -237,6 +230,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="!refactor: code generation rewrite, switched to iridium forgery and refactored large classes" />
     <MESSAGE value="refactor: moved dependency decleration and versioning to version catalogue" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: moved dependency decleration and versioning to version catalogue" />
+    <MESSAGE value="feat: made http server plugable" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: made http server plugable" />
   </component>
 </project>
