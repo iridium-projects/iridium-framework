@@ -11,7 +11,7 @@ dependencies() {
   annotationProcessor(libs.avaje.jsonb.generator)
   api(libs.slf4j.api)
   api(libs.avaje.jsonb)
-  api(project(":iridium-log"))
+  api(libs.iridium.log)
   compileOnly(project(":iridium-codegen"))
   annotationProcessor(project(":iridium-codegen"))
 }

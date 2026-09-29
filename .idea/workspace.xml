@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="feat: made http server plugable">
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/ClientMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/client/ClientMethod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/route/RouteWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/src/main/java/cc/asylum/iridium/web/processor/route/RouteWriter.java" afterDir="false" />
-    </list>
+    <list default="true" id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="fix: wired html escaping correctly" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,6 +103,7 @@
   "keyToString": {
     "Gradle.iridium-framework [:iridium-demo-hello:cc.asylum.iridium.demo.hello.Application.main()].executor": "Run",
     "Gradle.iridium-framework [:iridium-demo-hello:run].executor": "Run",
+    "Gradle.iridium-framework [assemble].executor": "Run",
     "Gradle.iridium-framework [build].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -123,7 +121,7 @@
     "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
-  <component name="RunManager" selected="Gradle.iridium-framework [build]">
+  <component name="RunManager" selected="Gradle.iridium-framework [assemble]">
     <configuration name="Application" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="cc.asylum.iridium.demo.hello.Application" />
       <module name="iridium.iridium-demo-hello.main" />
@@ -149,6 +147,31 @@
         <option name="taskNames">
           <list>
             <option value=":iridium-demo-hello:run" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <ExternalSystemDebugDisabled>false</ExternalSystemDebugDisabled>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <GradleProfilingDisabled>false</GradleProfilingDisabled>
+      <GradleCoverageDisabled>false</GradleCoverageDisabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="iridium-framework [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="assemble" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -200,6 +223,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.iridium-framework [assemble]" />
         <item itemvalue="Gradle.iridium-framework [build]" />
         <item itemvalue="Gradle.iridium-framework [:iridium-demo-hello:run]" />
         <item itemvalue="Application.Application" />
@@ -231,6 +255,7 @@
     <MESSAGE value="!refactor: code generation rewrite, switched to iridium forgery and refactored large classes" />
     <MESSAGE value="refactor: moved dependency decleration and versioning to version catalogue" />
     <MESSAGE value="feat: made http server plugable" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: made http server plugable" />
+    <MESSAGE value="fix: wired html escaping correctly" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: wired html escaping correctly" />
   </component>
 </project>

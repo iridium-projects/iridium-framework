@@ -14,20 +14,9 @@ include("iridium-web")
 include("iridium-codegen")
 include("iridium-config")
 
-fun extension(name: String) {
-    include(name)
-    project(":$name").projectDir = file("extensions/$name")
-}
-
 fun demo(name: String) {
     include(name)
     project(":$name").projectDir = file("demos/$name")
 }
-
-extension("iridium-web-undertow")
-extension("iridium-log")
-extension("iridium-data-jimmer")
-extension("iridium-openapi")
-extension("iridium-hot-reloading")
 
 demo("iridium-demo-hello")

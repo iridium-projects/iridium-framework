@@ -1,8 +1,0 @@
-package cc.asylum.iridium.data.spec.op;
-
-import cc.asylum.iridium.data.spec.Op;
-
-public final class Empty implements Op {
-  private Empty() {
-  }
-}
