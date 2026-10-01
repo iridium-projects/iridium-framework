@@ -5,6 +5,9 @@
 <br>
 
 # Iridium
+
+[![test coverage](https://img.shields.io/endpoint?url=https://codeberg.org/iridium-projects/iridium-framework/raw/branch/main/img/coverage.json)](https://codeberg.org/iridium-projects/iridium-framework)
+
 Hardwired Java. Full-stack framework built to endure and work in every environment. Zero Reflection. Zero Guesswork.
 <br>
 Inspired by Spring Boot. Built to stay small.

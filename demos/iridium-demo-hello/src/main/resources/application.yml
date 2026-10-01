@@ -1,9 +1,0 @@
-greeting:
-  prefix: Hello
-  suffix: "!"
-
-iridium:
-  openapi:
-    path: /api-docs
-    title: Hello API
-    version: 1.0.0

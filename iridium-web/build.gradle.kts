@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("iridium.common-convention")
+    id("iridium.test")
 }
 
 repositories {
@@ -10,5 +11,6 @@ repositories {
 dependencies() {
     api(project(":iridium-core"))
     compileOnly(project(":iridium-codegen"))
+    testImplementation(project(":iridium-codegen"))
     annotationProcessor(project(":iridium-codegen"))
 }

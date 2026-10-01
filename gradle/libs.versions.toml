@@ -4,14 +4,12 @@ avaje-jsonb = "3.16"
 slf4j = "2.0.16"
 snakeyaml = "2.3"
 forgery-jodist = "0.0.1"
-iridium-log = "0.0.1"
 iridium-web-undertow = "0.0.1"
 iridium-data-jimmer = "0.0.1"
 iridium-openapi = "0.0.1"
 iridium-hot-reloading = "0.0.1"
 shadow = "9.4.0"
 foojay = "1.0.0"
-
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 avaje-jsonb = { module = "io.avaje:avaje-jsonb", version.ref = "avaje-jsonb" }
@@ -19,7 +17,6 @@ avaje-jsonb-generator = { module = "io.avaje:avaje-jsonb-generator", version.ref
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 forgery-jodist = { module = "cc.asylum:forgery-jodist", version.ref = "forgery-jodist" }
-iridium-log = { module = "cc.asylum:iridium-log", version.ref = "iridium-log" }
 iridium-web-undertow = { module = "cc.asylum:iridium-web-undertow", version.ref = "iridium-web-undertow" }
 iridium-data-jimmer = { module = "cc.asylum:iridium-data-jimmer", version.ref = "iridium-data-jimmer" }
 iridium-openapi = { module = "cc.asylum:iridium-openapi", version.ref = "iridium-openapi" }

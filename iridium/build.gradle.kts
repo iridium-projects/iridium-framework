@@ -10,7 +10,7 @@ repositories {
 dependencies() {
   api(project(":iridium-web"))
   api(libs.iridium.web.undertow)
-  api(libs.iridium.log)
+  api(project(":iridium-log"))
   api(project(":iridium-codegen"))
   api(project(":iridium-config"))
 }

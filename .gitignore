@@ -37,3 +37,6 @@ bin/
 limbo/src/main/java/club/revived/limbo/LimboManager.java
 .classpath
 
+.project
+.settings/
+local.properties

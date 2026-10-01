@@ -12,6 +12,11 @@
                   <project path="$PROJECT_DIR$/buildSrc" />
                 </projects>
               </build>
+              <build path="$PROJECT_DIR$/../iridium-conventions" name="iridium-conventions">
+                <projects>
+                  <project path="$PROJECT_DIR$/../iridium-conventions" />
+                </projects>
+              </build>
               <build path="$PROJECT_DIR$/iridium-gradle-plugin" name="iridium-gradle-plugin">
                 <projects>
                   <project path="$PROJECT_DIR$/iridium-gradle-plugin" />
@@ -24,19 +29,15 @@
         <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$/../iridium-conventions" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/demos/iridium-demo-hello" />
-            <option value="$PROJECT_DIR$/extensions/iridium-data-jimmer" />
-            <option value="$PROJECT_DIR$/extensions/iridium-hot-reloading" />
-            <option value="$PROJECT_DIR$/extensions/iridium-log" />
-            <option value="$PROJECT_DIR$/extensions/iridium-openapi" />
-            <option value="$PROJECT_DIR$/extensions/iridium-web-undertow" />
             <option value="$PROJECT_DIR$/iridium" />
             <option value="$PROJECT_DIR$/iridium-codegen" />
             <option value="$PROJECT_DIR$/iridium-config" />
             <option value="$PROJECT_DIR$/iridium-core" />
             <option value="$PROJECT_DIR$/iridium-gradle-plugin" />
+            <option value="$PROJECT_DIR$/iridium-log" />
             <option value="$PROJECT_DIR$/iridium-web" />
           </set>
         </option>
