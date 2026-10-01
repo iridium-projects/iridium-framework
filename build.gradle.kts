@@ -1,3 +1,3 @@
 plugins {
-    id("iridium.test")
+    alias(libs.plugins.iridium.test)
 }

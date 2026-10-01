@@ -1,10 +1,23 @@
 pluginManagement {
+    plugins {
+        id("iridium.test") version "0.0.4"
+    }
+
     includeBuild("iridium-gradle-plugin")
-    includeBuild("../iridium-conventions")
+    val local = file("../iridium-conventions")
+    if (local.resolve("settings.gradle.kts").isFile) {
+        includeBuild(local)
+    }
+
+    repositories {
+        maven {
+            url = uri("https://maven.iridium4j.io/releases")
+        }
+        gradlePluginPortal()
+    }
 }
 
 plugins {
-    id("iridium.dev")
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 

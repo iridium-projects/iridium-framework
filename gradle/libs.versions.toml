@@ -10,6 +10,7 @@ iridium-openapi = "0.0.1"
 iridium-hot-reloading = "0.0.1"
 shadow = "9.4.0"
 foojay = "1.0.0"
+
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 avaje-jsonb = { module = "io.avaje:avaje-jsonb", version.ref = "avaje-jsonb" }
@@ -25,4 +26,5 @@ shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "s
 
 [plugins]
 foojay = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay" }
+iridium-test = { id = "iridium.test" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

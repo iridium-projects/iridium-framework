@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("iridium.common-convention")
-    id("iridium.test")
+    alias(libs.plugins.iridium.test)
 }
 
 repositories {

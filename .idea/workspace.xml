@@ -5,54 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6c72bde-a15e-4ec0-943d-025b5dad4472" name="Changes" comment="fix: wired html escaping correctly">
-      <change beforePath="$PROJECT_DIR$/../iridium-conventions/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../iridium-conventions/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../iridium-conventions/src/main/kotlin/cc/asylum/iridium/conventions/IridiumDevPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../iridium-conventions/src/main/kotlin/cc/asylum/iridium/conventions/IridiumDevPlugin.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../iridium-conventions/src/main/kotlin/iridium.common-convention.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../iridium-conventions/src/main/kotlin/iridium.common-convention.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.common-convention.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.common-convention.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.module-convention.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/iridium.module-convention.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/.project" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/.settings/org.eclipse.buildship.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/.settings/org.eclipse.jdt.apt.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/src/main/java/cc/asylum/iridium/demo/hello/Application.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/src/main/java/cc/asylum/iridium/demo/hello/GreetingConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/src/main/java/cc/asylum/iridium/demo/hello/GreetingService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/src/main/java/cc/asylum/iridium/demo/hello/HelloController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/src/main/java/cc/asylum/iridium/demo/hello/HelloDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/iridium-demo-hello/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/.project" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/.settings/org.eclipse.buildship.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/.settings/org.eclipse.jdt.apt.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/src/main/java/cc/asylum/iridium/log/LogProvider.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/src/main/java/cc/asylum/iridium/log/Logger.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/src/main/java/cc/asylum/iridium/log/LoggerFactory.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/src/main/java/cc/asylum/iridium/log/LoggerFormat.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-log/src/main/resources/META-INF/services/org.slf4j.spi.SLF4JServiceProvider" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/.project" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/.settings/org.eclipse.buildship.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/.settings/org.eclipse.jdt.apt.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/.settings/org.eclipse.jdt.core.prefs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/build.gradle.kts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/java/cc/asylum/iridium/web/undertow/UndertowWebServer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/java/cc/asylum/iridium/web/undertow/client/UndertowClients.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/extensions/iridium-web-undertow/src/main/resources/META-INF/services/cc.asylum.iridium.web.webserver.WebServer" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iridium-codegen/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-codegen/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iridium-config/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-config/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iridium-core/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-core/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-gradle-plugin/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-gradle-plugin/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium-gradle-plugin/src/main/kotlin/cc/asylum/iridium/gradle/IridiumPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-gradle-plugin/src/main/kotlin/cc/asylum/iridium/gradle/IridiumPlugin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iridium-log/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-log/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iridium-web/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium-web/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium.pid" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/iridium/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/iridium/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
