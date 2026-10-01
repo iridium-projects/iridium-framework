@@ -3,10 +3,11 @@ pluginManagement {
         id("iridium.test") version "0.0.4"
     }
 
-    includeBuild("iridium-gradle-plugin")
-    val local = file("../iridium-conventions")
-    if (local.resolve("settings.gradle.kts").isFile) {
-        includeBuild(local)
+    if (settings.rootDir.name != "iridium") {
+        val local = file("../iridium-conventions")
+        if (local.resolve("settings.gradle.kts").isFile) {
+            includeBuild(local)
+        }
     }
 
     repositories {
@@ -23,7 +24,6 @@ plugins {
 
 rootProject.name = "iridium"
 
-include("iridium")
 include("iridium-core")
 include("iridium-log")
 include("iridium-web")

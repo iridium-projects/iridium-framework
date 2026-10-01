@@ -1,5 +1,6 @@
 package cc.asylum.iridium.web.router;
 
+import cc.asylum.iridium.web.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -14,7 +15,7 @@ final class RouteTest {
 
   @Test
   void exactRouteMatchesOnlyIdenticalSegments() {
-    final Handler handler = request -> null;
+    final Handler handler = _ -> null;
     final Route route = new Route("get", "/users", handler);
 
     assertEquals("GET", route.method());
@@ -31,7 +32,7 @@ final class RouteTest {
   void variableRouteCapturesNamedSegments() {
     final Route route = new Route("DELETE", "/users/{id}/posts/{postId}", new Handler() {
       @Override
-      public cc.asylum.iridium.web.response.Response<?> handle(final Request request) {
+      public Response<?> handle(final Request request) {
         return null;
       }
 
