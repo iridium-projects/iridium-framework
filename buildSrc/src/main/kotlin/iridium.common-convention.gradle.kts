@@ -13,13 +13,19 @@ java {
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://maven.iridium4j.io/releases")
+    }
 }
 
-dependencies() {
-    compileOnly("org.projectlombok:lombok:1.18.48")
-    annotationProcessor("org.projectlombok:lombok:1.18.48")
-    testCompileOnly("org.projectlombok:lombok:1.18.48")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
+val libs = the<VersionCatalogsExtension>().named("libs")
+
+dependencies {
+    compileOnly(libs.findLibrary("lombok").get())
+    annotationProcessor(libs.findLibrary("lombok").get())
+    testCompileOnly(libs.findLibrary("lombok").get())
+    testAnnotationProcessor(libs.findLibrary("lombok").get())
+    testImplementation(libs.findLibrary("archunit-junit5").get())
 }
 
 tasks.withType<JavaCompile> {
@@ -27,6 +33,6 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+
+
+

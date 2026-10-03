@@ -13,18 +13,18 @@ public final class Parameters {
   }
 
   public static String pathVariable(
-      final Request request,
-      final String name,
-      final String defaultValue) {
+    final Request request,
+    final String name,
+    final String defaultValue) {
     final String value = request.pathVariable(name);
 
     return value == null ? defaultValue : value;
   }
 
   public static String query(
-      final Request request,
-      final String name,
-      final String defaultValue) {
+    final Request request,
+    final String name,
+    final String defaultValue) {
     final String value = request.query(name);
 
     return value == null ? defaultValue : value;
@@ -44,9 +44,9 @@ public final class Parameters {
   }
 
   public static String header(
-      final Request request,
-      final String name,
-      final String defaultValue) {
+    final Request request,
+    final String name,
+    final String defaultValue) {
     final String value = request.header(name);
 
     return value == null ? defaultValue : value;
@@ -57,9 +57,9 @@ public final class Parameters {
   }
 
   public static String cookie(
-      final Request request,
-      final String name,
-      final String defaultValue) {
+    final Request request,
+    final String name,
+    final String defaultValue) {
     for (final String cookieHeader : request.headers("Cookie")) {
       int start = 0;
       final int length = cookieHeader.length();
@@ -82,7 +82,7 @@ public final class Parameters {
 
         final int index = cookieHeader.indexOf('=', left);
         if (index > left && index < right && index - left == name.length()
-            && cookieHeader.regionMatches(left, name, 0, name.length())) {
+          && cookieHeader.regionMatches(left, name, 0, name.length())) {
           return cookieHeader.substring(index + 1, right);
         }
 

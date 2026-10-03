@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("iridium.common-convention")
+    alias(libs.plugins.iridium.test)
 }
 
 repositories {
@@ -9,5 +10,7 @@ repositories {
 
 dependencies() {
     api(project(":iridium-core"))
-    compileOnly("io.undertow:undertow-core:2.4.3.Final")
+    compileOnly(project(":iridium-codegen"))
+    testImplementation(project(":iridium-codegen"))
+    annotationProcessor(project(":iridium-codegen"))
 }

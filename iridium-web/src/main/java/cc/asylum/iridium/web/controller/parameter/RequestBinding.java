@@ -9,13 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface RequestBinding {
 
-  Source value();
-
-  enum Source {
-    PATH,
-    QUERY,
-    HEADER,
-    COOKIE,
-    BODY
-  }
+  BindingSource value();
 }

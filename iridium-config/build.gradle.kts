@@ -1,6 +1,7 @@
 plugins {
   id("java")
   id("iridium.common-convention")
+  alias(libs.plugins.iridium.test)
 }
 
 repositories {
@@ -9,5 +10,8 @@ repositories {
 
 dependencies {
   api(project(":iridium-core"))
-  implementation("org.yaml:snakeyaml:2.3")
+  implementation(libs.snakeyaml)
+  compileOnly(project(":iridium-codegen"))
+  testImplementation(project(":iridium-codegen"))
+  annotationProcessor(project(":iridium-codegen"))
 }

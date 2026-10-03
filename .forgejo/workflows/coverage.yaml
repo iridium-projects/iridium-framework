@@ -1,0 +1,23 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  coverage:
+    runs-on: codeberg-small
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+      - run: ./gradlew --no-daemon covered
+      - run: |
+          git config user.name "iridium4j"
+          git config user.email "coverage@iridium4j.io"
+          git add img/coverage.json
+          git diff --cached --quiet || git commit -m "Update coverage badge"
+          git push

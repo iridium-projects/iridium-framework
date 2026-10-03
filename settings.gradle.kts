@@ -1,5 +1,21 @@
 pluginManagement {
-    includeBuild("iridium-gradle-plugin")
+    plugins {
+        id("iridium.test") version "0.0.5"
+    }
+
+    if (settings.rootDir.name != "iridium") {
+        val local = file("../iridium-conventions")
+        if (local.resolve("settings.gradle.kts").isFile) {
+            includeBuild(local)
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://maven.iridium4j.io/releases")
+        }
+        gradlePluginPortal()
+    }
 }
 
 plugins {
@@ -8,26 +24,13 @@ plugins {
 
 rootProject.name = "iridium"
 
-include("iridium")
 include("iridium-core")
+include("iridium-log")
 include("iridium-web")
 include("iridium-codegen")
 include("iridium-config")
 
-fun extension(name: String) {
-    include(name)
-    project(":$name").projectDir = file("extensions/$name")
+gradle.beforeProject {
+    group = "cc.asylum"
+    version = "0.0.1"
 }
-
-fun demo(name: String) {
-    include(name)
-    project(":$name").projectDir = file("demos/$name")
-}
-
-extension("iridium-web-undertow")
-extension("iridium-log")
-extension("iridium-data-jimmer")
-extension("iridium-openapi")
-extension("iridium-hot-reloading")
-
-demo("iridium-demo-hello")

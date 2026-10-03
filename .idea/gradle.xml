@@ -12,33 +12,25 @@
                   <project path="$PROJECT_DIR$/buildSrc" />
                 </projects>
               </build>
-              <build path="$PROJECT_DIR$/iridium-gradle-plugin" name="iridium-gradle-plugin">
+              <build path="$PROJECT_DIR$/../iridium-conventions" name="iridium-conventions">
                 <projects>
-                  <project path="$PROJECT_DIR$/iridium-gradle-plugin" />
+                  <project path="$PROJECT_DIR$/../iridium-conventions" />
                 </projects>
               </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="ms-25" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$/../iridium-conventions" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/demos/iridium-demo-hello" />
-            <option value="$PROJECT_DIR$/extensions/iridium-data-jimmer" />
-            <option value="$PROJECT_DIR$/extensions/iridium-json-avaje" />
-            <option value="$PROJECT_DIR$/extensions/iridium-log" />
-            <option value="$PROJECT_DIR$/extensions/iridium-openapi" />
-            <option value="$PROJECT_DIR$/extensions/iridium-web-undertow" />
-            <option value="$PROJECT_DIR$/iridium" />
             <option value="$PROJECT_DIR$/iridium-codegen" />
             <option value="$PROJECT_DIR$/iridium-config" />
             <option value="$PROJECT_DIR$/iridium-core" />
-            <option value="$PROJECT_DIR$/iridium-gradle-plugin" />
-            <option value="$PROJECT_DIR$/iridium-json" />
-            <option value="$PROJECT_DIR$/iridium-tests" />
+            <option value="$PROJECT_DIR$/iridium-log" />
             <option value="$PROJECT_DIR$/iridium-web" />
           </set>
         </option>

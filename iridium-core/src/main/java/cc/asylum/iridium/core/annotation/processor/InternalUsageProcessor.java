@@ -1,25 +1,23 @@
 package cc.asylum.iridium.core.annotation.processor;
 
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
-import cc.asylum.iridium.core.annotation.Generated;
+import cc.asylum.iridium.codegen.Service;
+import cc.asylum.iridium.codegen.Generated;
 import cc.asylum.iridium.core.annotation.Internal;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 import java.lang.reflect.Field;
-import java.util.HashSet;
 import java.util.Set;
 
 @Internal
+@Service(isolating = true)
 @SupportedAnnotationTypes("*")
 public final class InternalUsageProcessor extends AbstractProcessor {
 
@@ -28,12 +26,12 @@ public final class InternalUsageProcessor extends AbstractProcessor {
   private Trees trees;
 
   @Override
-  public synchronized void init(final javax.annotation.processing.ProcessingEnvironment processingEnv) {
+  public synchronized void init(final ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
     this.trees = resolveTrees(processingEnv);
   }
 
-  private static Trees resolveTrees(javax.annotation.processing.ProcessingEnvironment environment) {
+  private static Trees resolveTrees(ProcessingEnvironment environment) {
     for (int depth = 0; depth < 4 && environment != null; depth++) {
       try {
         return Trees.instance(environment);
@@ -41,18 +39,19 @@ public final class InternalUsageProcessor extends AbstractProcessor {
         environment = delegateOf(environment);
       }
     }
+
     return null;
   }
 
-  private static javax.annotation.processing.ProcessingEnvironment delegateOf(
-      final javax.annotation.processing.ProcessingEnvironment environment) {
+  private static ProcessingEnvironment delegateOf(final ProcessingEnvironment environment) {
     try {
       final Field field = environment.getClass().getDeclaredField("delegate");
       field.setAccessible(true);
       final Object delegate = field.get(environment);
-      return delegate instanceof final javax.annotation.processing.ProcessingEnvironment unwrapped
-          ? unwrapped
-          : null;
+
+      return delegate instanceof final ProcessingEnvironment unwrapped
+        ? unwrapped
+        : null;
     } catch (final ReflectiveOperationException | SecurityException notUnwrappable) {
       return null;
     }
@@ -80,7 +79,7 @@ public final class InternalUsageProcessor extends AbstractProcessor {
         continue;
       }
 
-      new InternalScanner(root).scan(path, null);
+      new InternalScanner(trees, processingEnv, root).scan(path, null);
     }
 
     return false;
@@ -94,40 +93,5 @@ public final class InternalUsageProcessor extends AbstractProcessor {
     final String pkg = Internal.class.getPackageName();
     final int index = pkg.indexOf(".core");
     return index < 0 ? pkg : pkg.substring(0, index);
-  }
-
-  private final class InternalScanner extends TreePathScanner<Void, Void> {
-
-    private final Element root;
-    private final Set<String> seen = new HashSet<>();
-
-    InternalScanner(final Element root) {
-      this.root = root;
-    }
-
-    @Override
-    public Void visitIdentifier(final IdentifierTree node, final Void unused) {
-      checkType();
-      return super.visitIdentifier(node, unused);
-    }
-
-    @Override
-    public Void visitMemberSelect(final MemberSelectTree node, final Void unused) {
-      checkType();
-      return super.visitMemberSelect(node, unused);
-    }
-
-    private void checkType() {
-      final Element element = trees.getElement(getCurrentPath());
-      if (element instanceof final TypeElement type
-          && type.getAnnotation(Internal.class) != null
-          && seen.add(type.getQualifiedName().toString())) {
-        processingEnv.getMessager().printMessage(
-            Diagnostic.Kind.WARNING,
-            "Usage of internal type '" + type.getQualifiedName()
-                + "' may change or be removed without notice.",
-            root);
-      }
-    }
   }
 }

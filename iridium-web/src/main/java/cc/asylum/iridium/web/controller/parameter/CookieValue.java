@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@RequestBinding(RequestBinding.Source.COOKIE)
+@RequestBinding(BindingSource.COOKIE)
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.CLASS)
 public @interface CookieValue {

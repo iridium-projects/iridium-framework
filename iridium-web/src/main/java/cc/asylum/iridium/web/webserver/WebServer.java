@@ -21,6 +21,13 @@ public interface WebServer {
 
   Result<Unit, Exception> registerRoutes();
 
+  byte[] exchange(
+      final String baseUrl,
+      final String method,
+      final String path,
+      final String contentType,
+      final byte[] body);
+
   static Result<Unit, Exception> reload() {
     final Result<Unit, Exception> beans = BeanPool.initialize();
 
@@ -35,7 +42,14 @@ public interface WebServer {
   }
 
   static WebServer load() {
-    return ServiceLoader.load(WebServer.class).findFirst()
+    return Loaded.SERVER;
+  }
+
+  final class Loaded {
+    private static final WebServer SERVER = ServiceLoader.load(WebServer.class).findFirst()
         .orElseThrow(() -> new IllegalStateException("No WebServer implementation on classpath"));
+
+    private Loaded() {
+    }
   }
 }
