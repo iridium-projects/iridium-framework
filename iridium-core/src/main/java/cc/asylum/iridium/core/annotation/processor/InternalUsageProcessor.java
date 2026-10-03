@@ -48,10 +48,10 @@ public final class InternalUsageProcessor extends AbstractProcessor {
       final Field field = environment.getClass().getDeclaredField("delegate");
       field.setAccessible(true);
       final Object delegate = field.get(environment);
+
       return delegate instanceof final ProcessingEnvironment unwrapped
         ? unwrapped
         : null;
-
     } catch (final ReflectiveOperationException | SecurityException notUnwrappable) {
       return null;
     }

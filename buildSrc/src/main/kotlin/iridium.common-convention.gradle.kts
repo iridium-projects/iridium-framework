@@ -25,6 +25,7 @@ dependencies {
     annotationProcessor(libs.findLibrary("lombok").get())
     testCompileOnly(libs.findLibrary("lombok").get())
     testAnnotationProcessor(libs.findLibrary("lombok").get())
+    testImplementation(libs.findLibrary("archunit-junit5").get())
 }
 
 tasks.withType<JavaCompile> {

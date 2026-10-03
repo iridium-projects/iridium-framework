@@ -10,6 +10,7 @@ iridium-openapi = "0.0.1"
 iridium-hot-reloading = "0.0.1"
 shadow = "9.4.0"
 foojay = "1.0.0"
+archunit = "1.5.1"
 
 [libraries]
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
@@ -23,6 +24,7 @@ iridium-data-jimmer = { module = "cc.asylum:iridium-data-jimmer", version.ref = 
 iridium-openapi = { module = "cc.asylum:iridium-openapi", version.ref = "iridium-openapi" }
 iridium-hot-reloading = { module = "cc.asylum:iridium-hot-reloading", version.ref = "iridium-hot-reloading" }
 shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 
 [plugins]
 foojay = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay" }

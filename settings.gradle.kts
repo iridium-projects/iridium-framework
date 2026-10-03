@@ -1,6 +1,6 @@
 pluginManagement {
     plugins {
-        id("iridium.test") version "0.0.4"
+        id("iridium.test") version "0.0.5"
     }
 
     if (settings.rootDir.name != "iridium") {

@@ -17,11 +17,6 @@
                   <project path="$PROJECT_DIR$/../iridium-conventions" />
                 </projects>
               </build>
-              <build path="$PROJECT_DIR$/iridium-gradle-plugin" name="iridium-gradle-plugin">
-                <projects>
-                  <project path="$PROJECT_DIR$/iridium-gradle-plugin" />
-                </projects>
-              </build>
             </builds>
           </compositeBuild>
         </compositeConfiguration>
@@ -32,11 +27,9 @@
             <option value="$PROJECT_DIR$/../iridium-conventions" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/iridium" />
             <option value="$PROJECT_DIR$/iridium-codegen" />
             <option value="$PROJECT_DIR$/iridium-config" />
             <option value="$PROJECT_DIR$/iridium-core" />
-            <option value="$PROJECT_DIR$/iridium-gradle-plugin" />
             <option value="$PROJECT_DIR$/iridium-log" />
             <option value="$PROJECT_DIR$/iridium-web" />
           </set>
